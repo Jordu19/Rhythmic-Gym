@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rhythmic Gym</title>
+    <link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Rajdhani:wght@600;700&display=swap)" rel="stylesheet">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body, html { 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden; 
+            background-color: #050508; 
+            font-family: 'Rajdhani', sans-serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 430px; 
+            height: 100%;
+            max-height: 920px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        header { text-align: center; margin-bottom: 2px; }
+        h1 { 
+            font-family: 'Orbitron', sans-serif; 
+            font-weight: 900;
+            font-size: 1.9rem; 
+            background: linear-gradient(to right, #00d2ff, #ff007f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.5));
+            letter-spacing: 3px;
+        }
+
+        .credits {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: #ff007f;
+            letter-spacing: 2px;
+            margin-top: 1px;
+            text-shadow: 0 0 5px rgba(255, 0, 127, 0.5);
+            font-weight: 600;
+        }
+
+        .control-panel {
+            background: rgba(15, 15, 25, 0.85);
+            border: 2px solid rgba(121, 40, 202, 0.3);
+            border-radius: 12px;
+            padding: 10px; 
+            display: flex;
+            flex-direction: column;
+            gap: 8px; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .row { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+        .flex-1 { flex: 1; }
+
+        label { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem; 
+            font-weight: 600;
+            text-transform: uppercase; 
+            color: #00d2ff; 
+            letter-spacing: 1px; 
+            display: block; 
+            margin-bottom: 3px;
+        }
+        
+        select, input[type="range"] {
+            width: 100%;
+            background: #090911;
+            border: 1px solid #7928ca;
+            color: white;
+            padding: 6px 10px; 
+            border-radius: 6px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .bpm-display {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #ff007f;
+            text-shadow: 0 0 6px rgba(255, 0, 127, 0.6);
+            min-width: 55px;
+            text-align: right;
+        }
+
+        /* Toggle Switch CSS */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 38px;
+            height: 22px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #090911; border: 1px solid #7928ca; border-radius: 22px;
+            transition: .2s;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px;
+            background-color: white; border-radius: 50%; transition: .2s;
+        }
+        input:checked + .slider { background-color: #ff007f; border-color: #ff007f; }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        button {
+            flex: 1;
+            padding: 10px; 
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.85rem; 
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #btnRandomize {
+            background: linear-gradient(135deg, #7928ca, #ff007f);
+            color: white;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.3);
+        }
+        #btnPlay {
+            background: linear-gradient(135deg, #0070f3, #00d2ff);
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+        }
+        #btnPlay.playing { background: #ff3333; box-shadow: 0 0 10px rgba(255, 51, 51, 0.5); }
+        button:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+
+        .grid-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px 0; 
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 8px;
+            width: 100%;
+            height: 100%; 
+            max-height: calc(100vw - 32px); 
+            aspect-ratio: 1 / 1; 
+        }
+
+        .slot {
+            background: #07070c;
+            border: 3.5px solid #0070f3; 
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 8px rgba(0, 112, 243, 0.4), inset 0 0 12px rgba(0, 112, 243, 0.35);
+            transition: background-color 0.08s ease, border-color 0.08s ease;
+            padding: 6px; 
+        }
+
+        .slot-label {
+            position: absolute;
+            bottom: 2px;
+            font-size: 0.6rem;
+            font-family: 'Orbitron', sans-serif;
+            color: rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+        }
+        
+        .slot svg {
+            width: 100%;
+            height: 100%;
+            max-width: 95px; 
+            max-height: 95px;
+            filter: drop-shadow(0 0 5px rgba(0, 210, 255, 0.9));
+        }
+        
+        .slot svg .draw-fill { fill: #ffffff; }
+        .slot svg .draw-stroke { stroke: #ffffff; fill: none; }
+
+        .slot.extended {
+            background: #030305;
+            border: 1px dashed rgba(0, 112, 243, 0.15);
+            box-shadow: none;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.6); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .slot.animate-pop svg {
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.2) both;
+        }
+
+        .slot.active {
+            background-color: rgba(121, 40, 202, 0.4);
+            border-color: #ff007f;
+            box-shadow: 0 0 18px #ff007f, inset 0 0 12px #ff007f;
+        }
+        .slot.active svg {
+            filter: drop-shadow(0 0 6px rgba(255, 0, 127, 0.9));
+        }
+        .slot.active svg .draw-fill { fill: #ff007f; }
+        .slot.active svg .draw-stroke { stroke: #ff007f; }
+
+        .countdown-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 8, 0.88);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+        }
+        .countdown-overlay.show { opacity: 1; }
+        .countdown-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9rem;
+            font-weight: 900;
+            color: #ff007f;
+            text-shadow: 0 0 40px #ff007f;
+            transform: scale(0.4);
+            transition: transform 0.1s ease;
+        }
+        .countdown-overlay.show .countdown-text { transform: scale(1); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <h1>RHYTHMIC GYM</h1>
+            <div class="credits">By Jordu</div>
+        </header>
+
+        <div class="control-panel">
+            <div class="row">
+                <div class="flex-1">
+                    <label for="difficulty">Difficoltà / Argomento</label>
+                    <select id="difficulty"></select>
+                </div>
+                <!-- Toggle per il playback del ritmo -->
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <label for="playbackToggle" style="margin-bottom:6px">Playback</label>
+                    <label class="switch">
+                        <input type="checkbox" id="playbackToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="flex-1">
+                    <label for="bpm">Metronomo (BPM)</label>
+                    <input type="range" id="bpm" value="100" min="40" max="220">
+                </div>
+                <div class="bpm-display"><span id="bpmValue">100</span> <span style="font-size:0.6rem">BPM</span></div>
+            </div>
+            <div class="row">
+                <button id="btnRandomize">Randomize</button>
+                <button id="btnPlay">Play</button>
+            </div>
+        </div>
+
+        <div class="grid-wrapper">
+            <div id="grid" class="grid"></div>
+        </div>
+
+        <div id="countdownOverlay" class="countdown-overlay">
+            <div id="countdownText" class="countdown-text">1</div>
+        </div>
+    </div>
+
+    <script>
+        const metronomeSound = new Audio('click.mp3'); 
+        const rhythmSound = new Audio('rull.mp3');
+        
+        function playClickSound() {
+            metronomeSound.currentTime = 0;
+            metronomeSound.play().catch(() => {});
+        }
+
+        function playRhythmSound() {
+            const clone = rhythmSound.cloneNode();
+            clone.play().catch(() => {});
+        }
+
+        const figurations = {
+            A: `<svg viewBox="0 0 100 100"><ellipse cx="45" cy="75" rx="10" ry="7" transform="rotate(-20 45 75)" class="draw-fill"/><line x1="54" y1="75" x2="54" y2="25" stroke-width="4.5" class="draw-stroke"/></svg>`,
+            B: `<svg viewBox="0 0 100 100"><path d="M45,25 L55,35 L40,48 L58,62 C50,72 40,68 42,78" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="draw-stroke"/></svg>`,
+            C: `<svg viewBox="0 0 100 100"><ellipse cx="32" cy="75" rx="9" ry="6.5" transform="rotate(-20 32 75)" class="draw-fill"/><line x1="40" y1="75" x2="40" y2="25" stroke-width="4" class="draw-stroke"/><ellipse cx="68" cy="75" rx="9" ry="6.5" transform="rotate(-20 68 75)" class="draw-fill"/><line x1="76" y1="75" x2="76" y2="25" stroke-width="4" class="draw-stroke"/><rect x="40" y="21" width="36" height="7" class="draw-fill"/></svg>`,
+            D: `<svg viewBox="0 0 100 100"><circle cx="32" cy="40" r="4" class="draw-fill"/><path d="M32,40 C42,45 37,30 27,58" stroke-width="3" class="draw-stroke"/><ellipse cx="68" cy="75" rx="9" ry="6.5" transform="rotate(-20 68 75)" class="draw-fill"/><line x1="76" y1="75" x2="76" y2="25" stroke-width="4" class="draw-stroke"/><path d="M76,25 C86,35 86,48 76,55" stroke-width="4.5" fill="none" class="draw-stroke"/></svg>`,
+            E: `<svg viewBox="0 0 100 100"><ellipse cx="23" cy="75" rx="6" ry="4.5" transform="rotate(-20 23 75)" class="draw-fill"/><line x1="28" y1="75" x2="28" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="41" cy="75" rx="6" ry="4.5" transform="rotate(-20 41 75)" class="draw-fill"/><line x1="46" y1="75" x2="46" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="59" cy="75" rx="6" ry="4.5" transform="rotate(-20 59 75)" class="draw-fill"/><line x1="64" y1="75" x2="64" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="77" cy="75" rx="6" ry="4.5" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3" class="draw-stroke"/><rect x="28" y="22" width="54" height="6" class="draw-fill"/><rect x="28" y="32" width="54" height="4" class="draw-fill"/></svg>`,
+            F: `<svg viewBox="0 0 100 100"><ellipse cx="23" cy="75" rx="6.5" ry="5" transform="rotate(-20 23 75)" class="draw-fill"/><line x1="28" y1="75" x2="28" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="41" cy="75" rx="6.5" ry="5" transform="rotate(-20 41 75)" class="draw-fill"/><line x1="46" y1="75" x2="46" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="68" cy="75" rx="6.5" ry="5" transform="rotate(-20 68 75)" class="draw-fill"/><line x1="73" y1="75" x2="73" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="28" y="22" width="45" height="6" class="draw-fill"/><rect x="28" y="32" width="18" height="4" class="draw-fill"/></svg>`,
+            G: `<svg viewBox="0 0 100 100"><ellipse cx="23" cy="75" rx="6.5" ry="5" transform="rotate(-20 23 75)" class="draw-fill"/><line x1="28" y1="75" x2="28" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="59" cy="75" rx="6.5" ry="5" transform="rotate(-20 59 75)" class="draw-fill"/><line x1="64" y1="75" x2="64" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="77" cy="75" rx="6.5" ry="5" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="28" y="22" width="54" height="6" class="draw-fill"/><rect x="64" y="32" width="18" height="4" class="draw-fill"/></svg>`,
+            H: `<svg viewBox="0 0 100 100"><ellipse cx="23" cy="75" rx="6.5" ry="5" transform="rotate(-20 23 75)" class="draw-fill"/><line x1="28" y1="75" x2="28" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="44" cy="75" rx="6.5" ry="5" transform="rotate(-20 44 75)" class="draw-fill"/><line x1="49" y1="75" x2="49" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="77" cy="75" rx="6.5" ry="5" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="28" y="22" width="54" height="6" class="draw-fill"/><path d="M28,32 L34,32 M82,32 L76,32" stroke-width="4" stroke-linecap="square" class="draw-stroke"/></svg>`,
+            I: `<svg viewBox="0 0 100 100"><circle cx="26" cy="40" r="4" class="draw-fill"/><path d="M26,40 C36,45 31,30 21,58" stroke-width="3" class="draw-stroke"/><ellipse cx="59" cy="75" rx="7" ry="5" transform="rotate(-20 59 75)" class="draw-fill"/><line x1="64" y1="75" x2="64" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="77" cy="75" rx="7" ry="5" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="64" y="22" width="18" height="6" class="draw-fill"/><rect x="64" y="32" width="18" height="4" class="draw-fill"/></svg>`,
+            J: `<svg viewBox="0 0 100 100"><ellipse cx="23" cy="75" rx="8" ry="6" transform="rotate(-20 23 75)" class="draw-fill"/><circle cx="37" cy="75" r="3.5" class="draw-fill"/><line x1="31" y1="75" x2="31" y2="25" stroke-width="4" class="draw-stroke"/><ellipse cx="77" cy="75" rx="8" ry="6" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="4" class="draw-stroke"/><rect x="31" y="22" width="51" height="6" class="draw-fill"/><rect x="68" y="32" width="14" height="4" class="draw-fill"/></svg>`,
+            K: `<svg viewBox="0 0 100 100"><circle cx="23" cy="38" r="3" class="draw-fill"/><path d="M23,38 C31,42 27,28 19,50" stroke-width="2.5" class="draw-stroke"/><circle cx="19" cy="48" r="3" class="draw-fill"/><path d="M19,48 C27,52 23,38 15,60" stroke-width="2.5" class="draw-stroke"/><ellipse cx="56" cy="75" rx="8" ry="6" transform="rotate(-20 56 75)" class="draw-fill"/><circle cx="70" cy="75" r="3.5" class="draw-fill"/><line x1="62" y1="75" x2="62" y2="25" stroke-width="4" class="draw-stroke"/><path d="M62,25 C72,35 72,48 62,55" stroke-width="3.5" fill="none" class="draw-stroke"/></svg>`,
+            L: `<svg viewBox="0 0 100 100"><circle cx="16" cy="38" r="2.8" class="draw-fill"/><path d="M16,38 C24,42 20,28 12,50" stroke-width="2.3" class="draw-stroke"/><circle cx="12" cy="48" r="2.8" class="draw-fill"/><path d="M12,48 C20,52 16,38 8,60" stroke-width="2.3" class="draw-stroke"/><ellipse cx="36" cy="75" rx="6.5" ry="5" transform="rotate(-20 36 75)" class="draw-fill"/><line x1="42" y1="75" x2="42" y2="25" stroke-width="3.5" class="draw-stroke"/><path d="M42,25 C52,35 52,48 42,55 M42,35 C50,43 50,53 42,59" stroke-width="3" fill="none" class="draw-stroke"/><circle cx="64" cy="38" r="2.8" class="draw-fill"/><path d="M64,38 C72,42 68,28 60,50" stroke-width="2.3" class="draw-stroke"/><circle cx="60" cy="48" r="2.8" class="draw-fill"/><path d="M60,48 C68,52 64,38 56,60" stroke-width="2.3" class="draw-stroke"/><ellipse cx="85" cy="75" rx="6.5" ry="5" transform="rotate(-20 85 75)" class="draw-fill"/><line x1="91" y1="75" x2="91" y2="25" stroke-width="3.5" class="draw-stroke"/><path d="M91,25 C101,35 101,48 91,55 M91,35 C99,43 99,53 91,59" stroke-width="3" fill="none" class="draw-stroke"/></svg>`,
+            M: `<svg viewBox="0 0 100 100"><circle cx="19" cy="48" r="3" class="draw-fill"/><path d="M19,48 C27,52 23,38 15,60" stroke-width="2.5" class="draw-stroke"/><circle cx="23" cy="38" r="3" class="draw-fill"/><path d="M23,38 C31,42 27,28 19,50" stroke-width="2.5" class="draw-stroke"/><ellipse cx="41" cy="75" rx="6" ry="4.5" transform="rotate(-20 41 75)" class="draw-fill"/><line x1="46" y1="75" x2="46" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="59" cy="75" rx="6" ry="4.5" transform="rotate(-20 59 75)" class="draw-fill"/><line x1="64" y1="75" x2="64" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="77" cy="75" rx="6" ry="4.5" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3" class="draw-stroke"/><rect x="46" y="22" width="36" height="6" class="draw-fill"/><rect x="46" y="32" width="36" height="4" class="draw-fill"/></svg>`,
+            N: `<svg viewBox="0 0 100 100"><circle cx="18" cy="38" r="3" class="draw-fill"/><path d="M18,38 C26,42 22,28 14,50" stroke-width="2.5" class="draw-stroke"/><circle cx="14" cy="48" r="3" class="draw-fill"/><path d="M14,48 C22,52 18,38 10,60" stroke-width="2.5" class="draw-stroke"/><ellipse cx="53" cy="75" rx="7" ry="5" transform="rotate(-20 53 75)" class="draw-fill"/><line x1="59" y1="75" x2="59" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="80" cy="75" rx="7" ry="5" transform="rotate(-20 80 75)" class="draw-fill"/><line x1="86" y1="75" x2="86" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="59" y="22" width="27" height="6" class="draw-fill"/><rect x="59" y="32" width="12" height="4" class="draw-fill"/></svg>`,
+            O: `<svg viewBox="0 0 100 100"><circle cx="23" cy="40" r="4" class="draw-fill"/><circle cx="37" cy="40" r="3" class="draw-fill"/><path d="M23,40 C33,45 28,30 18,58" stroke-width="3" class="draw-stroke"/><ellipse cx="77" cy="75" rx="8" ry="6" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="4" class="draw-stroke"/><path d="M82,25 C92,35 92,48 82,55 M82,35 C90,43 90,53 82,59" stroke-width="3.5" fill="none" class="draw-stroke"/></svg>`,
+            P: `<svg viewBox="0 0 100 100"><text x="50" y="16" font-family='Orbitron' font-size="12" font-weight="900" text-anchor="middle" fill="#ff007f">3</text><ellipse cx="24" cy="75" rx="7" ry="5" transform="rotate(-20 24 75)" class="draw-fill"/><line x1="30" y1="75" x2="30" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="50" cy="75" rx="7" ry="5" transform="rotate(-20 50 75)" class="draw-fill"/><line x1="56" y1="75" x2="56" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="76" cy="75" rx="7" ry="5" transform="rotate(-20 76 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="30" y="22" width="52" height="6" class="draw-fill"/></svg>`,
+            Q: `<svg viewBox="0 0 100 100"><text x="50" y="16" font-family='Orbitron' font-size="12" font-weight="900" text-anchor="middle" fill="#ff007f">3</text><circle cx="24" cy="40" r="4" class="draw-fill"/><path d="M24,40 C34,45 29,30 19,58" stroke-width="3" class="draw-stroke"/><ellipse cx="50" cy="75" rx="7" ry="5" transform="rotate(-20 50 75)" class="draw-fill"/><line x1="56" y1="75" x2="56" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="76" cy="75" rx="7" ry="5" transform="rotate(-20 76 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="56" y="22" width="26" height="6" class="draw-fill"/></svg>`,
+            R: `<svg viewBox="0 0 100 100"><text x="50" y="16" font-family='Orbitron' font-size="12" font-weight="900" text-anchor="middle" fill="#ff007f">3</text><ellipse cx="24" cy="75" rx="7" ry="5" transform="rotate(-20 24 75)" class="draw-fill"/><line x1="30" y1="75" x2="30" y2="25" stroke-width="3.5" class="draw-stroke"/><circle cx="50" cy="40" r="4" class="draw-fill"/><path d="M50,40 C60,45 55,30 45,58" stroke-width="3" class="draw-stroke"/><ellipse cx="76" cy="75" rx="7" ry="5" transform="rotate(-20 76 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3.5" class="draw-stroke"/><line x1="30" y1="24" x2="82" y2="24" stroke-width="5" class="draw-stroke"/></svg>`,
+            S: `<svg viewBox="0 0 100 100"><text x="50" y="16" font-family='Orbitron' font-size="12" font-weight="900" text-anchor="middle" fill="#ff007f">3</text><ellipse cx="24" cy="75" rx="7" ry="5" transform="rotate(-20 24 75)" class="draw-fill"/><line x1="30" y1="75" x2="30" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="50" cy="75" rx="7" ry="5" transform="rotate(-20 50 75)" class="draw-fill"/><line x1="56" y1="75" x2="56" y2="25" stroke-width="3.5" class="draw-stroke"/><circle cx="76" cy="40" r="4" class="draw-fill"/><path d="M76,40 C86,45 81,30 71,58" stroke-width="3" class="draw-stroke"/><rect x="30" y="22" width="26" height="6" class="draw-fill"/></svg>`,
+            T: `<svg viewBox="0 0 100 100"><text x="50" y="16" font-family='Orbitron' font-size="12" font-weight="900" text-anchor="middle" fill="#ff007f">3</text><circle cx="32" cy="40" r="4" class="draw-fill"/><path d="M32,40 C42,45 37,30 27,58" stroke-width="3" class="draw-stroke"/><ellipse cx="68" cy="75" rx="10" ry="7" transform="rotate(-20 68 75)" class="draw-fill"/><line x1="77" y1="75" x2="77" y2="25" stroke-width="4.5" class="draw-stroke"/></svg>`,
+            U: `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="20" ry="13" stroke-width="5.5" transform="rotate(-20 50 50)" class="draw-stroke"/></svg>`,
+            V: `<svg viewBox="0 0 100 100"><line x1="20" y1="45" x2="80" y2="45" stroke-width="3" class="draw-stroke"/><rect x="35" y="45" width="30" height="12" class="draw-fill"/></svg>`,
+            W: `<svg viewBox="0 0 100 100"><ellipse cx="45" cy="75" rx="10" ry="7" stroke-width="4.5" transform="rotate(-20 45 75)" class="draw-stroke"/><line x1="54" y1="74" x2="54" y2="25" stroke-width="4" class="draw-stroke"/></svg>`,
+            X: `<svg viewBox="0 0 100 100"><line x1="20" y1="55" x2="80" y2="55" stroke-width="3" class="draw-stroke"/><rect x="35" y="43" width="30" height="12" class="draw-fill"/></svg>`,
+            Y: `<svg viewBox="0 0 100 100"><circle cx="19" cy="48" r="3" class="draw-fill"/><path d="M19,48 C27,52 23,38 15,60" stroke-width="2.5" class="draw-stroke"/><circle cx="23" cy="38" r="3" class="draw-fill"/><path d="M23,38 C31,42 27,28 19,50" stroke-width="2.5" class="draw-stroke"/><ellipse cx="41" cy="75" rx="6" ry="4.5" transform="rotate(-20 41 75)" class="draw-fill"/><line x1="46" y1="75" x2="46" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="59" cy="75" rx="6" ry="4.5" transform="rotate(-20 59 75)" class="draw-fill"/><line x1="64" y1="75" x2="64" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="77" cy="75" rx="6" ry="4.5" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3" class="draw-stroke"/><rect x="46" y="22" width="36" height="6" class="draw-fill"/><rect x="46" y="32" width="36" height="4" class="draw-fill"/></svg>`,
+        };
+
+        const rhythmOnsets = {
+            A: [0], B: [], C: [0, 0.5], D: [0.5], E: [0, 0.25, 0.5, 0.75],
+            F: [0, 0.25, 0.5], G: [0, 0.5, 0.75], H: [0, 0.25, 0.75],
+            I: [0.5, 0.75], J: [0, 0.75], K: [0, 0.25], L: [0.25, 0.75],
+            M: [0.25, 0.5], N: [0.75], O: [0.25], P: [0, 0.333, 0.666],
+            Q: [0.333, 0.666], R: [0, 0.666], S: [0, 0.333], T: [0.333],
+            U: [0], V: [], W: [0], X: [], Y: [0.25, 0.5, 0.75]
+        };
+
+        const levels = {
+            1: { name: "Livello 1 - Semibrevi/minime/semiminime", current: ['U', 'V', 'W', 'X', 'A', 'B'], past: [] },
+            2: { name: "Livello 2 - Crome", current: ['C', 'D'], past: ['W', 'X', 'A', 'B'] },
+            3: { name: "Livello 3 - Quartina di semicrome", current: ['E'], past: ['W', 'X', 'A', 'B', 'C', 'D'] },
+            4: { name: "Livello 4 - Crome e semicrome", current: ['F', 'G'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E'] },
+            5: { name: "Livello 5 - Semicroma/croma/semicroma", current: ['H'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G'] },
+            6: { name: "Livello 6 - Pause e semicrome", current: ['I'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] },
+            7: { name: "Livello 7 - Pause di semicrome", current: ['Y', 'L', 'M'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'] },
+            8: { name: "Livello 8 - Figurazioni puntate", current: ['J', 'K', 'N', 'O'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M'] },
+            9: { name: "Livello 9 - Terzina", current: ['P'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O'] },
+            10: { name: "Livello 10 - Terzina con 1 pausa", current: ['Q', 'R', 'S'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'P'] },
+            11: { name: "Livello 11 - Terzina con 2 pause", current: ['T'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'P', 'Q', 'R', 'S'] }
+        };
+
+        let playbackInterval = null;
+        let countdownTimeout = null;
+        let isPlaying = false; 
+
+        const difficultySelect = document.getElementById('difficulty');
+        const bpmInput = document.getElementById('bpm');
+        const bpmValue = document.getElementById('bpmValue');
+        const btnRandomize = document.getElementById('btnRandomize');
+        const btnPlay = document.getElementById('btnPlay');
+        const playbackToggle = document.getElementById('playbackToggle');
+        const gridContainer = document.getElementById('grid');
+        const countdownOverlay = document.getElementById('countdownOverlay');
+        const countdownText = document.getElementById('countdownText');
+
+        Object.keys(levels).forEach(lvl => {
+            const opt = document.createElement('option');
+            opt.value = lvl;
+            opt.textContent = levels[lvl].name;
+            difficultySelect.appendChild(opt);
+        });
+
+        bpmInput.addEventListener('input', () => { bpmValue.textContent = bpmInput.value; });
+
+        function initGrid() {
+            gridContainer.innerHTML = '';
+            for (let i = 0; i < 16; i++) {
+                const slot = document.createElement('div');
+                slot.classList.add('slot');
+                slot.id = `slot-${i}`;
+                gridContainer.appendChild(slot);
+            }
+        }
+
+        function getRandomKey(levelData) {
+            const currentPool = levelData.current;
+            const pastPool = levelData.past;
+            
+            if (pastPool.length === 0) {
+                return currentPool[Math.floor(Math.random() * currentPool.length)];
+            }
+            
+            if (Math.random() < 0.33) {
+                return currentPool[Math.floor(Math.random() * currentPool.length)];
+            } else {
+                return pastPool[Math.floor(Math.random() * pastPool.length)];
+            }
+        }
+
+        function randomizeGrid() {
+            const currentLevel = difficultySelect.value;
+            const levelData = levels[currentLevel];
+            
+            for (let i = 0; i < 16; i++) {
+                const slot = document.getElementById(`slot-${i}`);
+                slot.className = 'slot'; 
+                slot.innerHTML = '';
+                slot.removeAttribute('data-type');
+            }
+
+            let i = 0;
+            while (i < 16) {
+                const slot = document.getElementById(`slot-${i}`);
+                
+                if (slot.classList.contains('extended')) {
+                    i++;
+                    continue;
+                }
+
+                let key;
+                let attempt = 0;
+                
+                do {
+                    key = getRandomKey(levelData);
+                    attempt++;
+                    if (attempt > 50) { key = 'A'; break; }
+                } while (
+                    ((key === 'W' || key === 'X') && (i % 4 === 3)) ||
+                    ((key === 'U' || key === 'V') && (i % 4 !== 0))
+                );
+
+                slot.innerHTML = figurations[key];
+                slot.setAttribute('data-type', key);
+                
+                slot.classList.remove('animate-pop');
+                void slot.offsetWidth;
+                slot.classList.add('animate-pop');
+
+                if (key === 'U' || key === 'V') { 
+                    for (let next = 1; next <= 3; next++) {
+                        if (i + next < 16) {
+                            document.getElementById(`slot-${i + next}`).classList.add('extended');
+                        }
+                    }
+                    i += 4;
+                } else if (key === 'W' || key === 'X') { 
+                    if (i + 1 < 16) {
+                        document.getElementById(`slot-${i + 1}`).classList.add('extended');
+                    }
+                    i += 2;
+                } else {
+                    i++; 
+                }
+            }
+        }
+
+        function startPlayback() {
+            isPlaying = true;
+            const bpm = parseInt(bpmInput.value);
+            const msPerBeat = (60 / bpm) * 1000;
+            let countdownCount = 1; 
+            
+            btnPlay.textContent = "Stop";
+            btnPlay.classList.add('playing');
+            btnRandomize.disabled = true;
+            difficultySelect.disabled = true;
+            bpmInput.disabled = true;
+
+            countdownText.textContent = countdownCount;
+            countdownOverlay.classList.add('show');
+            playClickSound();
+            
+            function doCountdown() {
+                countdownCount++;
+                if (countdownCount <= 4) {
+                    countdownText.textContent = countdownCount;
+                    playClickSound();
+                    countdownTimeout = setTimeout(doCountdown, msPerBeat);
+                } else {
+                    countdownOverlay.classList.remove('show');
+                    runMetronome(msPerBeat);
+                }
+            }
+            countdownTimeout = setTimeout(doCountdown, msPerBeat);
+        }
+
+        function triggerSlotFunctions(index, msPerBeat) {
+            const slot = document.getElementById(`slot-${index}`);
+            slot.classList.add('active');
+            playClickSound();
+            
+            if (playbackToggle.checked) {
+                const type = slot.getAttribute('data-type');
+                if (type && rhythmOnsets[type]) {
+                    rhythmOnsets[type].forEach(fraction => {
+                        setTimeout(() => {
+                            if(isPlaying) playRhythmSound();
+                        }, fraction * msPerBeat);
+                    });
+                }
+            }
+        }
+
+        function runMetronome(msPerBeat) {
+            let currentSlot = 0;
+            triggerSlotFunctions(currentSlot, msPerBeat);
+
+            playbackInterval = setInterval(() => {
+                document.getElementById(`slot-${currentSlot}`).classList.remove('active');
+                currentSlot++;
+                
+                if (currentSlot < 16) {
+                    triggerSlotFunctions(currentSlot, msPerBeat);
+                } else {
+                    clearInterval(playbackInterval);
+                    if (isPlaying) {
+                        runMetronome(msPerBeat);
+                    }
+                }
+            }, msPerBeat);
+        }
+
+        function stopPlayback() {
+            isPlaying = false;
+            clearInterval(playbackInterval);
+            clearTimeout(countdownTimeout);
+            playbackInterval = null;
+            countdownTimeout = null;
+            
+            countdownOverlay.classList.remove('show');
+            btnPlay.textContent = "Play";
+            btnPlay.classList.remove('playing');
+            btnRandomize.disabled = false;
+            difficultySelect.disabled = false;
+            bpmInput.disabled = false;
+            
+            for (let i = 0; i < 16; i++) {
+                document.getElementById(`slot-${i}`).classList.remove('active');
+            }
+        }
+
+        btnRandomize.addEventListener('click', randomizeGrid);
+        btnPlay.addEventListener('click', () => {
+            if (isPlaying) { stopPlayback(); } else { startPlayback(); }
+        });
+
+        initGrid();
+        randomizeGrid();
+    </script>
+</body>
+</html>
