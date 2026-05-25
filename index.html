@@ -19,6 +19,14 @@
             justify-content: center;
             align-items: center;
         }
+        /* Quando lo slot è in focus durante il countdown */
+.slot.countdown-focus {
+    position: relative;
+    z-index: 15; /* Deve essere maggiore del z-index di .countdown-overlay (10) */
+    border-color: #00d2ff;
+    box-shadow: 0 0 20px #00d2ff;
+    background: #07070c;
+}
 
         .app-container {
             width: 100%;
@@ -265,6 +273,14 @@
                     <label for="difficulty">Difficoltà / Argomento</label>
                     <select id="difficulty"></select>
                 </div>
+                
+    <div style="display:flex; flex-direction:column; align-items:center;">
+    <label for="autoRandomToggle" style="margin-bottom:6px">AutoRandom</label>
+    <label class="switch">
+        <input type="checkbox" id="autoRandomToggle">
+        <span class="slider"></span>
+    </label>
+</div>
                 <!-- Toggle per il playback del ritmo -->
                 <div style="display:flex; flex-direction:column; align-items:center;">
                     <label for="playbackToggle" style="margin-bottom:6px">Playback</label>
@@ -287,6 +303,7 @@
                 <button id="btnPlay">Play</button>
             </div>
         </div>
+
 
         <div class="grid-wrapper">
             <div id="grid" class="grid"></div>
@@ -322,11 +339,19 @@
             H: `<svg viewBox="0 0 100 100"><ellipse cx="23" cy="75" rx="6.5" ry="5" transform="rotate(-20 23 75)" class="draw-fill"/><line x1="28" y1="75" x2="28" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="44" cy="75" rx="6.5" ry="5" transform="rotate(-20 44 75)" class="draw-fill"/><line x1="49" y1="75" x2="49" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="77" cy="75" rx="6.5" ry="5" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="28" y="22" width="54" height="6" class="draw-fill"/><path d="M28,32 L34,32 M82,32 L76,32" stroke-width="4" stroke-linecap="square" class="draw-stroke"/></svg>`,
             I: `<svg viewBox="0 0 100 100"><circle cx="26" cy="40" r="4" class="draw-fill"/><path d="M26,40 C36,45 31,30 21,58" stroke-width="3" class="draw-stroke"/><ellipse cx="59" cy="75" rx="7" ry="5" transform="rotate(-20 59 75)" class="draw-fill"/><line x1="64" y1="75" x2="64" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="77" cy="75" rx="7" ry="5" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="64" y="22" width="18" height="6" class="draw-fill"/><rect x="64" y="32" width="18" height="4" class="draw-fill"/></svg>`,
             J: `<svg viewBox="0 0 100 100"><ellipse cx="23" cy="75" rx="8" ry="6" transform="rotate(-20 23 75)" class="draw-fill"/><circle cx="37" cy="75" r="3.5" class="draw-fill"/><line x1="31" y1="75" x2="31" y2="25" stroke-width="4" class="draw-stroke"/><ellipse cx="77" cy="75" rx="8" ry="6" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="4" class="draw-stroke"/><rect x="31" y="22" width="51" height="6" class="draw-fill"/><rect x="68" y="32" width="14" height="4" class="draw-fill"/></svg>`,
-            K: `<svg viewBox="0 0 100 100"><circle cx="23" cy="38" r="3" class="draw-fill"/><path d="M23,38 C31,42 27,28 19,50" stroke-width="2.5" class="draw-stroke"/><circle cx="19" cy="48" r="3" class="draw-fill"/><path d="M19,48 C27,52 23,38 15,60" stroke-width="2.5" class="draw-stroke"/><ellipse cx="56" cy="75" rx="8" ry="6" transform="rotate(-20 56 75)" class="draw-fill"/><circle cx="70" cy="75" r="3.5" class="draw-fill"/><line x1="62" y1="75" x2="62" y2="25" stroke-width="4" class="draw-stroke"/><path d="M62,25 C72,35 72,48 62,55" stroke-width="3.5" fill="none" class="draw-stroke"/></svg>`,
+            K: `<svg viewBox="0 0 100 100">
+<ellipse cx="43" cy="71" rx="7" ry="5" transform="rotate(-20 53 75)" class="draw-fill"/>
+<line x1="46" y1="75" x2="46" y2="25" stroke-width="3.5" class="draw-stroke"/>
+<ellipse cx="65" cy="69" rx="7" ry="5" transform="rotate(-20 80 75)" class="draw-fill"/>
+<line x1="69" y1="75" x2="69" y2="25" stroke-width="3.5" class="draw-stroke"/>
+<rect x="45" y="22" width="26" height="6" class="draw-fill"/>
+<rect x="45" y="32" width="11" height="4" class="draw-fill"/>
+ <circle cx="78" cy="75" r="3" class="draw-fill"/>
+</svg>`,
             L: `<svg viewBox="0 0 100 100"><circle cx="16" cy="38" r="2.8" class="draw-fill"/><path d="M16,38 C24,42 20,28 12,50" stroke-width="2.3" class="draw-stroke"/><circle cx="12" cy="48" r="2.8" class="draw-fill"/><path d="M12,48 C20,52 16,38 8,60" stroke-width="2.3" class="draw-stroke"/><ellipse cx="36" cy="75" rx="6.5" ry="5" transform="rotate(-20 36 75)" class="draw-fill"/><line x1="42" y1="75" x2="42" y2="25" stroke-width="3.5" class="draw-stroke"/><path d="M42,25 C52,35 52,48 42,55 M42,35 C50,43 50,53 42,59" stroke-width="3" fill="none" class="draw-stroke"/><circle cx="64" cy="38" r="2.8" class="draw-fill"/><path d="M64,38 C72,42 68,28 60,50" stroke-width="2.3" class="draw-stroke"/><circle cx="60" cy="48" r="2.8" class="draw-fill"/><path d="M60,48 C68,52 64,38 56,60" stroke-width="2.3" class="draw-stroke"/><ellipse cx="85" cy="75" rx="6.5" ry="5" transform="rotate(-20 85 75)" class="draw-fill"/><line x1="91" y1="75" x2="91" y2="25" stroke-width="3.5" class="draw-stroke"/><path d="M91,25 C101,35 101,48 91,55 M91,35 C99,43 99,53 91,59" stroke-width="3" fill="none" class="draw-stroke"/></svg>`,
-            M: `<svg viewBox="0 0 100 100"><circle cx="19" cy="48" r="3" class="draw-fill"/><path d="M19,48 C27,52 23,38 15,60" stroke-width="2.5" class="draw-stroke"/><circle cx="23" cy="38" r="3" class="draw-fill"/><path d="M23,38 C31,42 27,28 19,50" stroke-width="2.5" class="draw-stroke"/><ellipse cx="41" cy="75" rx="6" ry="4.5" transform="rotate(-20 41 75)" class="draw-fill"/><line x1="46" y1="75" x2="46" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="59" cy="75" rx="6" ry="4.5" transform="rotate(-20 59 75)" class="draw-fill"/><line x1="64" y1="75" x2="64" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="77" cy="75" rx="6" ry="4.5" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3" class="draw-stroke"/><rect x="46" y="22" width="36" height="6" class="draw-fill"/><rect x="46" y="32" width="36" height="4" class="draw-fill"/></svg>`,
-            N: `<svg viewBox="0 0 100 100"><circle cx="18" cy="38" r="3" class="draw-fill"/><path d="M18,38 C26,42 22,28 14,50" stroke-width="2.5" class="draw-stroke"/><circle cx="14" cy="48" r="3" class="draw-fill"/><path d="M14,48 C22,52 18,38 10,60" stroke-width="2.5" class="draw-stroke"/><ellipse cx="53" cy="75" rx="7" ry="5" transform="rotate(-20 53 75)" class="draw-fill"/><line x1="59" y1="75" x2="59" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="80" cy="75" rx="7" ry="5" transform="rotate(-20 80 75)" class="draw-fill"/><line x1="86" y1="75" x2="86" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="59" y="22" width="27" height="6" class="draw-fill"/><rect x="59" y="32" width="12" height="4" class="draw-fill"/></svg>`,
-            O: `<svg viewBox="0 0 100 100"><circle cx="23" cy="40" r="4" class="draw-fill"/><circle cx="37" cy="40" r="3" class="draw-fill"/><path d="M23,40 C33,45 28,30 18,58" stroke-width="3" class="draw-stroke"/><ellipse cx="77" cy="75" rx="8" ry="6" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="4" class="draw-stroke"/><path d="M82,25 C92,35 92,48 82,55 M82,35 C90,43 90,53 82,59" stroke-width="3.5" fill="none" class="draw-stroke"/></svg>`,
+            M: `<svg viewBox="0 0 100 100"><circle cx="18" cy="38" r="3" class="draw-fill"/><path d="M18,38 C26,42 22,28 14,50" stroke-width="2.5" class="draw-stroke"/><circle cx="14" cy="48" r="3" class="draw-fill"/><path d="M14,48 C22,52 18,38 10,60" stroke-width="2.5" class="draw-stroke"/><ellipse cx="53" cy="75" rx="7" ry="5" transform="rotate(-20 53 75)" class="draw-fill"/><line x1="59" y1="75" x2="59" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="80" cy="75" rx="7" ry="5" transform="rotate(-20 80 75)" class="draw-fill"/><line x1="86" y1="75" x2="86" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="59" y="22" width="27" height="6" class="draw-fill"/><rect x="59" y="32" width="12" height="4" class="draw-fill"/></svg>`,
+            N: `<svg viewBox="0 0 100 100"><circle cx="23" cy="40" r="4" class="draw-fill"/><circle cx="37" cy="40" r="3" class="draw-fill"/><path d="M23,40 C33,45 28,30 18,58" stroke-width="3" class="draw-stroke"/><ellipse cx="77" cy="75" rx="8" ry="6" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="4" class="draw-stroke"/><path d="M82,25 C92,35 92,48 82,55 M82,35 C90,43 90,53 82,59" stroke-width="3.5" fill="none" class="draw-stroke"/></svg>`,
+            O: `<svg viewBox="0 0 100 100"><circle cx="23" cy="38" r="3" class="draw-fill"/><path d="M23,38 C31,42 27,28 19,50" stroke-width="2.5" class="draw-stroke"/><circle cx="19" cy="48" r="3" class="draw-fill"/><path d="M19,48 C27,52 23,38 15,60" stroke-width="2.5" class="draw-stroke"/><ellipse cx="56" cy="75" rx="8" ry="6" transform="rotate(-20 56 75)" class="draw-fill"/><circle cx="70" cy="75" r="3.5" class="draw-fill"/><line x1="62" y1="75" x2="62" y2="25" stroke-width="4" class="draw-stroke"/><path d="M62,25 C72,35 72,48 62,55" stroke-width="3.5" fill="none" class="draw-stroke"/></svg>`,
             P: `<svg viewBox="0 0 100 100"><text x="50" y="16" font-family='Orbitron' font-size="12" font-weight="900" text-anchor="middle" fill="#ff007f">3</text><ellipse cx="24" cy="75" rx="7" ry="5" transform="rotate(-20 24 75)" class="draw-fill"/><line x1="30" y1="75" x2="30" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="50" cy="75" rx="7" ry="5" transform="rotate(-20 50 75)" class="draw-fill"/><line x1="56" y1="75" x2="56" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="76" cy="75" rx="7" ry="5" transform="rotate(-20 76 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="30" y="22" width="52" height="6" class="draw-fill"/></svg>`,
             Q: `<svg viewBox="0 0 100 100"><text x="50" y="16" font-family='Orbitron' font-size="12" font-weight="900" text-anchor="middle" fill="#ff007f">3</text><circle cx="24" cy="40" r="4" class="draw-fill"/><path d="M24,40 C34,45 29,30 19,58" stroke-width="3" class="draw-stroke"/><ellipse cx="50" cy="75" rx="7" ry="5" transform="rotate(-20 50 75)" class="draw-fill"/><line x1="56" y1="75" x2="56" y2="25" stroke-width="3.5" class="draw-stroke"/><ellipse cx="76" cy="75" rx="7" ry="5" transform="rotate(-20 76 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3.5" class="draw-stroke"/><rect x="56" y="22" width="26" height="6" class="draw-fill"/></svg>`,
             R: `<svg viewBox="0 0 100 100"><text x="50" y="16" font-family='Orbitron' font-size="12" font-weight="900" text-anchor="middle" fill="#ff007f">3</text><ellipse cx="24" cy="75" rx="7" ry="5" transform="rotate(-20 24 75)" class="draw-fill"/><line x1="30" y1="75" x2="30" y2="25" stroke-width="3.5" class="draw-stroke"/><circle cx="50" cy="40" r="4" class="draw-fill"/><path d="M50,40 C60,45 55,30 45,58" stroke-width="3" class="draw-stroke"/><ellipse cx="76" cy="75" rx="7" ry="5" transform="rotate(-20 76 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3.5" class="draw-stroke"/><line x1="30" y1="24" x2="82" y2="24" stroke-width="5" class="draw-stroke"/></svg>`,
@@ -359,7 +384,8 @@
             8: { name: "Livello 8 - Figurazioni puntate", current: ['J', 'K', 'N', 'O'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M'] },
             9: { name: "Livello 9 - Terzina", current: ['P'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O'] },
             10: { name: "Livello 10 - Terzina con 1 pausa", current: ['Q', 'R', 'S'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'P'] },
-            11: { name: "Livello 11 - Terzina con 2 pause", current: ['T'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'P', 'Q', 'R', 'S'] }
+            11: { name: "Livello 11 - Terzina con 2 pause", current: ['T'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'P', 'Q', 'R', 'S'] },
+            12: { name: "Livello 12 - Ricapitolazione", current: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'P', 'Q', 'R', 'S', 'T'], past: [] },
         };
 
         let playbackInterval = null;
@@ -410,92 +436,134 @@
             }
         }
 
-        function randomizeGrid() {
-            const currentLevel = difficultySelect.value;
-            const levelData = levels[currentLevel];
-            
-            for (let i = 0; i < 16; i++) {
-                const slot = document.getElementById(`slot-${i}`);
-                slot.className = 'slot'; 
-                slot.innerHTML = '';
-                slot.removeAttribute('data-type');
+function randomizeGrid() {
+    const currentLevel = difficultySelect.value;
+    const levelData = levels[currentLevel];
+    
+    /* Pulizia e inizializzazione diagnostica
+    for (let i = 0; i < 16; i++) {
+        const slot = document.getElementById(`slot-${i}`);
+        slot.className = 'slot'; 
+        slot.innerHTML = '';
+        slot.removeAttribute('data-type');
+        
+        // Creazione etichetta per la diagnostica
+        const label = document.createElement('div');
+        label.className = 'slot-label';
+        slot.appendChild(label);
+    }*/
+
+    let i = 0;
+    while (i < 16) {
+        const slot = document.getElementById(`slot-${i}`);
+        if (slot.classList.contains('extended')) { i++; continue; }
+
+        let key;
+        let attempt = 0;
+        do {
+            key = getRandomKey(levelData);
+            attempt++;
+            if (attempt > 50) { key = 'A'; break; }
+        } while (
+            ((key === 'W' || key === 'X') && (i % 4 === 3)) ||
+            ((key === 'U' || key === 'V') && (i % 4 !== 0))
+        );
+
+        // Inserimento SVG
+        slot.insertAdjacentHTML('beforeend', figurations[key]);
+        slot.setAttribute('data-type', key);
+        
+        // Aggiornamento etichetta diagnostica
+        const label = slot.querySelector('.slot-label');
+        if(label) label.textContent = key; // Qui rendi visibile la lettera
+        
+        slot.classList.add('animate-pop');
+
+        // Logica extended
+        if (key === 'U' || key === 'V') { 
+            for (let next = 1; next <= 3; next++) {
+                if (i + next < 16) document.getElementById(`slot-${i + next}`).classList.add('extended');
             }
-
-            let i = 0;
-            while (i < 16) {
-                const slot = document.getElementById(`slot-${i}`);
-                
-                if (slot.classList.contains('extended')) {
-                    i++;
-                    continue;
-                }
-
-                let key;
-                let attempt = 0;
-                
-                do {
-                    key = getRandomKey(levelData);
-                    attempt++;
-                    if (attempt > 50) { key = 'A'; break; }
-                } while (
-                    ((key === 'W' || key === 'X') && (i % 4 === 3)) ||
-                    ((key === 'U' || key === 'V') && (i % 4 !== 0))
-                );
-
-                slot.innerHTML = figurations[key];
-                slot.setAttribute('data-type', key);
-                
-                slot.classList.remove('animate-pop');
-                void slot.offsetWidth;
-                slot.classList.add('animate-pop');
-
-                if (key === 'U' || key === 'V') { 
-                    for (let next = 1; next <= 3; next++) {
-                        if (i + next < 16) {
-                            document.getElementById(`slot-${i + next}`).classList.add('extended');
-                        }
-                    }
-                    i += 4;
-                } else if (key === 'W' || key === 'X') { 
-                    if (i + 1 < 16) {
-                        document.getElementById(`slot-${i + 1}`).classList.add('extended');
-                    }
-                    i += 2;
-                } else {
-                    i++; 
-                }
-            }
+            i += 4;
+        } else if (key === 'W' || key === 'X') { 
+            if (i + 1 < 16) document.getElementById(`slot-${i + 1}`).classList.add('extended');
+            i += 2;
+        } else {
+            i++; 
         }
+    }
+}
+function randomizeRange(start, end) {
+    const currentLevel = difficultySelect.value;
+    const levelData = levels[currentLevel];
+    
+    // Pulisce e resetta solo gli slot richiesti
+    for (let i = start; i < end; i++) {
+        const slot = document.getElementById(`slot-${i}`);
+        slot.className = 'slot'; // Reset classi (rimuove active, extended, ecc)
+        slot.innerHTML = '<div class="slot-label"></div>'; 
+        slot.removeAttribute('data-type');
+    }
+
+    // Riempie il range
+    let i = start;
+    while (i < end) {
+        const slot = document.getElementById(`slot-${i}`);
+        if (slot.classList.contains('extended')) { i++; continue; }
+
+        let key = getRandomKey(levelData);
+        slot.insertAdjacentHTML('beforeend', figurations[key]);
+        slot.setAttribute('data-type', key);
+        slot.querySelector('.slot-label').textContent = key;
+        
+        // Gestione estensioni (per non "tagliare" una nota che occupa più slot)
+        if (key === 'U' || key === 'V') {
+            for (let next = 1; next <= 3; next++) {
+                if (i + next < 16) document.getElementById(`slot-${i + next}`).classList.add('extended');
+            }
+            i += 4;
+        } else if (key === 'W' || key === 'X') {
+            if (i + 1 < 16) document.getElementById(`slot-${i + 1}`).classList.add('extended');
+            i += 2;
+        } else {
+            i++;
+        }
+    }
+}
 
         function startPlayback() {
-            isPlaying = true;
-            const bpm = parseInt(bpmInput.value);
-            const msPerBeat = (60 / bpm) * 1000;
-            let countdownCount = 1; 
-            
-            btnPlay.textContent = "Stop";
-            btnPlay.classList.add('playing');
-            btnRandomize.disabled = true;
-            difficultySelect.disabled = true;
-            bpmInput.disabled = true;
+    isPlaying = true;
+    const bpm = parseInt(bpmInput.value);
+    const msPerBeat = (60 / bpm) * 1000;
+    let countdownCount = 1; 
+    
+    // ... (manteniamo le logiche di blocco interfaccia che avevi)
+    btnPlay.textContent = "Stop";
+    btnPlay.classList.add('playing');
+    
+    // Evidenziamo il primo slot
+    const firstSlot = document.getElementById('slot-0');
+    firstSlot.classList.add('countdown-focus');
 
+    countdownText.textContent = countdownCount;
+    countdownOverlay.classList.add('show');
+    playClickSound();
+    
+    function doCountdown() {
+        countdownCount++;
+        if (countdownCount <= 4) {
             countdownText.textContent = countdownCount;
-            countdownOverlay.classList.add('show');
             playClickSound();
-            
-            function doCountdown() {
-                countdownCount++;
-                if (countdownCount <= 4) {
-                    countdownText.textContent = countdownCount;
-                    playClickSound();
-                    countdownTimeout = setTimeout(doCountdown, msPerBeat);
-                } else {
-                    countdownOverlay.classList.remove('show');
-                    runMetronome(msPerBeat);
-                }
-            }
             countdownTimeout = setTimeout(doCountdown, msPerBeat);
+        } else {
+            countdownOverlay.classList.remove('show');
+            // Rimuoviamo il focus prima di iniziare
+            firstSlot.classList.remove('countdown-focus');
+            runMetronome(msPerBeat);
         }
+    }
+    countdownTimeout = setTimeout(doCountdown, msPerBeat);
+}
 
         function triggerSlotFunctions(index, msPerBeat) {
             const slot = document.getElementById(`slot-${index}`);
@@ -518,7 +586,21 @@
             let currentSlot = 0;
             triggerSlotFunctions(currentSlot, msPerBeat);
 
-            playbackInterval = setInterval(() => {
+            playbackInterval = setInterval(() => {const autoRandomToggle = document.getElementById('autoRandomToggle');
+
+if (autoRandomToggle && autoRandomToggle.checked) {
+    // 1. Quando la lettura arriva allo slot 12 (che corrisponde al tuo "13")
+    // Randomizziamo gli slot da 0 a 11 (che corrispondono ai tuoi "1 a 12")
+    if (currentSlot === 12) {
+        randomizeRange(0, 12);
+    }
+
+    // 2. Quando la lettura torna allo slot 0 (inizio nuovo giro)
+    // Randomizziamo gli slot da 12 a 15 (che corrispondono ai tuoi "13 a 16")
+    if (currentSlot === 0) {
+        randomizeRange(12, 16);
+    }
+}
                 document.getElementById(`slot-${currentSlot}`).classList.remove('active');
                 currentSlot++;
                 
