@@ -273,7 +273,6 @@
                     <label for="difficulty">Difficoltà / Argomento</label>
                     <select id="difficulty"></select>
                 </div>
-                
     <div style="display:flex; flex-direction:column; align-items:center;">
     <label for="autoRandomToggle" style="margin-bottom:6px">AutoRandom</label>
     <label class="switch">
@@ -303,7 +302,6 @@
                 <button id="btnPlay">Play</button>
             </div>
         </div>
-
 
         <div class="grid-wrapper">
             <div id="grid" class="grid"></div>
@@ -440,7 +438,7 @@ function randomizeGrid() {
     const currentLevel = difficultySelect.value;
     const levelData = levels[currentLevel];
     
-    /* Pulizia e inizializzazione diagnostica
+    // Pulizia e inizializzazione diagnostica
     for (let i = 0; i < 16; i++) {
         const slot = document.getElementById(`slot-${i}`);
         slot.className = 'slot'; 
@@ -451,7 +449,7 @@ function randomizeGrid() {
         const label = document.createElement('div');
         label.className = 'slot-label';
         slot.appendChild(label);
-    }*/
+    }
 
     let i = 0;
     while (i < 16) {
