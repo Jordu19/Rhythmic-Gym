@@ -19,7 +19,7 @@
             justify-content: center;
             align-items: center;
         }
-        /* Quando lo slot è in focus durante il countdown */
+        /* Quando lo slot Ã¨ in focus durante il countdown */
 .slot.countdown-focus {
     position: relative;
     z-index: 15; /* Deve essere maggiore del z-index di .countdown-overlay (10) */
@@ -479,6 +479,8 @@
     <script>
         const metronomeSound = new Audio('click.mp3'); 
         const rhythmSound = new Audio('rull.mp3');
+        const clapSound = new Audio ('clap.mp3');
+        const stompSound = new Audio ('stomp.mp3');
         
         function playClickSound() {
             metronomeSound.currentTime = 0;
@@ -490,7 +492,119 @@
             clone.play().catch(() => {});
         }
 
+        let audioContext = null;
+
+        function getAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
+
+        function playAudioClone(audio, fallback) {
+            const clone = audio.cloneNode();
+            clone.play().catch(() => {
+                if (fallback) fallback();
+            });
+        }
+
+        function playSynthClap() {
+            const ctx = getAudioContext();
+            const duration = 0.11;
+            const buffer = ctx.createBuffer(1, ctx.sampleRate * duration, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < data.length; i++) {
+                const envelope = Math.pow(1 - i / data.length, 2.6);
+                data[i] = (Math.random() * 2 - 1) * envelope;
+            }
+
+            const noise = ctx.createBufferSource();
+            const filter = ctx.createBiquadFilter();
+            const gain = ctx.createGain();
+
+            noise.buffer = buffer;
+            filter.type = 'bandpass';
+            filter.frequency.value = 1700;
+            filter.Q.value = 0.8;
+            gain.gain.value = 0.65;
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start();
+        }
+
+        function playSynthStomp() {
+            const ctx = getAudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(105, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(45, ctx.currentTime + 0.16);
+            gain.gain.setValueAtTime(0.9, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.18);
+        }
+
+        function playClapSound() {
+            playAudioClone(clapSound, playSynthClap);
+        }
+
+        function playStompSound() {
+            playAudioClone(stompSound, playSynthStomp);
+        }
+
+        function warmUpAudio() {
+            try {
+                const ctx = getAudioContext();
+                if (ctx.state === 'suspended') ctx.resume();
+            } catch (error) {}
+        }
+
+        function playFigurationSound(type, isStillPlaying, msPerBeat) {
+            if (type === 'CLAP') {
+                if (isStillPlaying()) playClapSound();
+                return;
+            }
+
+            if (type === 'STOMP') {
+                if (isStillPlaying()) playStompSound();
+                return;
+            }
+
+            if (type === 'EMPTY') {
+                return;
+            }
+
+            if (type && rhythmOnsets[type]) {
+                rhythmOnsets[type].forEach(fraction => {
+                    setTimeout(() => {
+                        if (isStillPlaying()) playRhythmSound();
+                    }, fraction * msPerBeat);
+                });
+            }
+        }
+
         const figurations = {
+            
+            // Aggiungi queste all'oggetto figurations
+CLAP: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" viewBox="0 0 303.91 303.91" xml:space="preserve">
+<g>
+	<path fill="#00d2ff" d="M287.528,138.19c-6.546-5.209-16.075-4.12-21.281,2.426l-17.114,21.518l0.365-105.399   c0.029-8.365-6.729-15.17-15.093-15.199c-0.018,0-0.035,0-0.053,0c-5.422,0-10.17,2.861-12.845,7.151l0.041-11.774   c0.029-8.365-6.729-15.17-15.093-15.198c-0.018,0-0.035,0-0.054,0c-8.34,0-15.116,6.747-15.145,15.094l-0.05,14.432   c-2.654-4.322-7.404-7.221-12.849-7.24c-0.018,0-0.035,0-0.053,0c-8.34,0-15.116,6.747-15.145,15.094l-0.087,25.133   c-2.655-4.322-7.404-7.221-12.849-7.24c-0.018,0-0.035,0-0.054,0c-2.685,0-5.202,0.707-7.39,1.934   c5.2,3.981,9.08,9.606,10.834,16.096c16.101,0.535,29.078,13.798,29.135,30.025l0.01,3.012   c15.629,1.044,28.069,14.089,28.124,29.974l0.277,79.879c15.654-0.029,23.931-9.64,34.872-23.21   c11.073-13.733,43.923-55.226,43.923-55.226C295.16,152.925,294.075,143.396,287.528,138.19z"/>
+	<path fill="#00d2ff" d="M75.062,75.006c2.931,2.929,7.678,2.928,10.607,0c2.929-2.93,2.929-7.678,0-10.607L48.946,27.676   c-2.93-2.928-7.678-2.928-10.607,0c-2.929,2.93-2.929,7.678,0,10.607L75.062,75.006z"/>
+	<path fill="#00d2ff" d="M62.785,96.705c1.257-3.947-0.924-8.165-4.871-9.422L20.441,75.352c-3.947-1.261-8.166,0.924-9.422,4.871   c-1.257,3.947,0.924,8.165,4.871,9.422l37.473,11.932C57.302,102.832,61.527,100.658,62.785,96.705z"/>
+	<path fill="#00d2ff" d="M97.947,47.25c1.259,3.954,5.483,6.126,9.422,4.871c3.947-1.257,6.128-5.476,4.871-9.422L100.309,5.227   c-1.256-3.947-5.475-6.128-9.422-4.871c-3.947,1.257-6.128,5.476-4.871,9.422L97.947,47.25z"/>
+	<path fill="#00d2ff" d="M180.736,142.986c-0.019,0-0.035,0-0.054,0c-5.444,0.019-10.194,2.918-12.849,7.24l-0.087-25.133   c-0.029-8.347-6.805-15.094-15.145-15.094c-0.018,0-0.035,0-0.053,0c-5.445,0.019-10.194,2.918-12.849,7.24l-0.05-14.432   c-0.029-8.346-6.805-15.093-15.145-15.094c-0.018,0-0.035,0-0.054,0c-8.365,0.029-15.122,6.834-15.094,15.199l0.041,11.774   c-2.676-4.289-7.423-7.151-12.845-7.151c-0.018,0-0.035,0-0.053,0c-8.365,0.029-15.123,6.834-15.094,15.199l0.365,105.399   l-17.114-21.518c-5.205-6.544-14.733-7.636-21.281-2.426c-6.547,5.206-7.633,14.735-2.426,21.281c0,0,33.012,41.365,43.923,55.226   c10.01,12.716,19.259,23.213,34.943,23.213c0.045,0,0.089,0,0.134,0l36.321-0.126c22.118-0.077,40.051-18.134,39.975-40.253   c-0.079-22.831-0.296-85.423-0.366-105.451C195.852,149.734,189.075,142.986,180.736,142.986z"/>
+</g>
+</svg>`,
+STOMP: `<svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 512 512"><path fill="#ff007f" d="M216.012 36.703c-6.348.01-13.056.447-20.006 1.32-34.6 4.347-75.144 19.348-107.408 47.303l33.47 190.197.33 10.1c42.262 15.79 100.808 24.565 152.873 24.272 27.192-.154 52.657-2.762 72.982-7.8 20.325-5.04 35.188-12.803 41.803-20.917l.433.353c-14.317-48.847-60.635-88.597-135.474-56.27-12.09 5.612-24.333 12.902-36.332 21.685 11.24-16.29 23.786-29.055 36.76-38.453l.013-.12-27.066-14.183-35.343 25-10.793-15.256L209.8 184.45l-27.5-14.41 8.67-16.554 35.964 18.842 34.57-24.457 1.62-16.186-30.2-17.918-35.16 22.433-10.05-15.757 27.208-17.36-27.97-16.595 9.538-16.072 36.08 21.408 37.088-23.664c1.453-20.61-21.48-31.51-53.646-31.457zm51.082 55.262l-16.522 10.54 14.602 8.665 1.92-19.205zm-8.053 80.54l-13.517 9.563 11.936 6.254 1.58-15.816zm135.57 129.91c-10.84 8.135-25.243 13.7-41.86 17.82-22.375 5.546-49.07 8.188-77.373 8.347-21.232.12-43.344-1.15-65.117-3.76l12.463 22.137c80.16 9.438 141.51-1.205 172.035-21.796.718-7.44.658-15.098-.15-22.75zm-271.553 3.312l.996 30.464 58.595 8.456 9.58-22.312c-24.54-3.827-48.202-9.383-69.17-16.607zm-33.13 21.56c-2.51.75-4.906 1.515-7.175 2.3H35.236l24.928 11.085-44.28 25.63 45.677-4.822c2.33 1.773 5.212 3.498 8.62 5.166l-29.19 44.532 64.785-32.977c4.21.968 8.64 1.892 13.27 2.773l-10.733 66.783 61.413-59.744c5.432.527 10.985 1.008 16.67 1.435l11.673 77.528 50.93-75.073c2.03.013 4.05.034 6.096.034 2.436 0 4.85-.022 7.265-.04l56.216 76.782 6.903-79.364c5.663-.437 11.218-.92 16.625-1.457l60.782 59.9-10.762-66.976c4.528-.872 8.86-1.787 12.98-2.743l65.102 33.14-29.437-44.913c3.135-1.58 5.808-3.21 7.984-4.88l46.562 4.915-44.253-25.613 24.966-11.1h-48.592c-2.223-.77-4.564-1.52-7.016-2.253 5.408 3.254 8.34 6.724 8.34 10.326 0 18.587-77.737 33.652-173.627 33.652-95.89 0-173.627-15.065-173.627-33.652 0-3.62 2.96-7.105 8.418-10.373z"/></svg>`,
+EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
             A: `<svg viewBox="0 0 100 100"><ellipse cx="45" cy="75" rx="10" ry="7" transform="rotate(-20 45 75)" class="draw-fill"/><line x1="54" y1="75" x2="54" y2="25" stroke-width="4.5" class="draw-stroke"/></svg>`,
             B: `<svg viewBox="0 0 100 100"><path d="M45,25 L55,35 L40,48 L58,62 C50,72 40,68 42,78" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="draw-stroke"/></svg>`,
             C: `<svg viewBox="0 0 100 100"><ellipse cx="32" cy="75" rx="9" ry="6.5" transform="rotate(-20 32 75)" class="draw-fill"/><line x1="40" y1="75" x2="40" y2="25" stroke-width="4" class="draw-stroke"/><ellipse cx="68" cy="75" rx="9" ry="6.5" transform="rotate(-20 68 75)" class="draw-fill"/><line x1="76" y1="75" x2="76" y2="25" stroke-width="4" class="draw-stroke"/><rect x="40" y="21" width="36" height="7" class="draw-fill"/></svg>`,
@@ -533,10 +647,32 @@
             I: [0.5, 0.75], J: [0, 0.75], K: [0, 0.25], L: [0.25, 0.75],
             M: [0.25, 0.5], N: [0.75], O: [0.25], P: [0, 0.333, 0.666],
             Q: [0.333, 0.666], R: [0, 0.666], S: [0, 0.333], T: [0.333],
-            U: [0], V: [], W: [0], X: [], Y: [0.25, 0.5, 0.75], Z: [0.666]
+            U: [0], V: [], W: [0], X: [], Y: [0.25, 0.5, 0.75], Z: [0.666],
+            CLAP: [0], STOMP: [0], EMPTY: []
         };
 
         const tutorialContents = {
+            CLAP: {
+                name: "Clap",
+                text: `
+                    <!-- SCRIVI QUI IL TESTO DEL TUTORIAL PER: Clap -->
+                    <p>Batti le mani sul tempo indicato dal riquadro.</p>
+                `
+            },
+            STOMP: {
+                name: "Stomp",
+                text: `
+                    <!-- SCRIVI QUI IL TESTO DEL TUTORIAL PER: Stomp -->
+                    <p>Batti il piede sul tempo indicato dal riquadro.</p>
+                `
+            },
+            EMPTY: {
+                name: "Vuoto",
+                text: `
+                    <!-- SCRIVI QUI IL TESTO DEL TUTORIAL PER: Vuoto -->
+                    <p>In questo riquadro non suoni nessuna azione ritmica.</p>
+                `
+            },
             A: {
                 name: "Semiminima",
                 text: `
@@ -722,6 +858,7 @@
         };
 
         const levels = {
+            0: { name: "Livello 0 - Introduzione", current: ['CLAP', 'STOMP', 'EMPTY'], past: [] },
             1: { name: "Livello 1 - Semibrevi/minime/semiminime", current: ['U', 'V', 'W', 'X', 'A', 'B'], past: [] },
             2: { name: "Livello 2 - Crome", current: ['C', 'D'], past: ['W', 'X', 'A', 'B'] },
             3: { name: "Livello 3 - Quartina di semicrome", current: ['E'], past: ['W', 'X', 'A', 'B', 'C', 'D'] },
@@ -1025,17 +1162,12 @@ function randomizeRange(start, end) {
 
             if (playbackToggle.checked) {
                 const type = slot.getAttribute('data-type');
-                if (type && rhythmOnsets[type]) {
-                    rhythmOnsets[type].forEach(fraction => {
-                        setTimeout(() => {
-                            if (isTutorialPlaying) playRhythmSound();
-                        }, fraction * msPerBeat);
-                    });
-                }
+                playFigurationSound(type, () => isTutorialPlaying, msPerBeat);
             }
         }
 
         function startTutorialPlayback() {
+            warmUpAudio();
             isTutorialPlaying = true;
             btnTutorialPlay.textContent = 'Stop';
             btnTutorialPlay.classList.add('playing');
@@ -1109,6 +1241,7 @@ function randomizeRange(start, end) {
         });
 
         function startPlayback() {
+    warmUpAudio();
     isPlaying = true;
     const bpm = parseInt(bpmInput.value);
     const msPerBeat = (60 / bpm) * 1000;
@@ -1143,21 +1276,17 @@ function randomizeRange(start, end) {
 }
 
         function triggerSlotFunctions(index, msPerBeat) {
-            const slot = document.getElementById(`slot-${index}`);
-            slot.classList.add('active');
-            playClickSound();
-            
-            if (playbackToggle.checked) {
-                const type = slot.getAttribute('data-type');
-                if (type && rhythmOnsets[type]) {
-                    rhythmOnsets[type].forEach(fraction => {
-                        setTimeout(() => {
-                            if(isPlaying) playRhythmSound();
-                        }, fraction * msPerBeat);
-                    });
-                }
-            }
-        }
+    const slot = document.getElementById(`slot-${index}`);
+    slot.classList.add('active');
+    
+    // Suono metronomo standard
+    playClickSound();
+    
+    if (playbackToggle.checked) {
+        const type = slot.getAttribute('data-type');
+        playFigurationSound(type, () => isPlaying, msPerBeat);
+    }
+}
 
         function runMetronome(msPerBeat) {
             let currentSlot = 0;
@@ -1222,6 +1351,7 @@ if (autoRandomToggle && autoRandomToggle.checked) {
     </script>
 </body>
 </html>
+
 
 
 
