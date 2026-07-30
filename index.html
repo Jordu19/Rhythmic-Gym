@@ -41,6 +41,11 @@
         }
 
         header { text-align: center; margin-bottom: 2px; }
+        .top-header {
+            display: grid;
+            grid-template-columns: 40px 1fr 40px;
+            align-items: center;
+        }
         h1 { 
             font-family: 'Orbitron', sans-serif; 
             font-weight: 900;
@@ -61,6 +66,199 @@
             margin-top: 1px;
             text-shadow: 0 0 5px rgba(255, 0, 127, 0.5);
             font-weight: 600;
+        }
+
+        .icon-menu-button {
+            width: 36px;
+            height: 36px;
+            flex: 0 0 auto;
+            padding: 0;
+            background: #090911;
+            border: 1px solid #7928ca;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.18);
+        }
+        .icon-menu-button span {
+            width: 18px;
+            height: 2px;
+            background: #00d2ff;
+            box-shadow: 0 0 6px rgba(0, 210, 255, 0.8);
+        }
+
+        .app-menu {
+            position: fixed;
+            top: 52px;
+            right: 12px;
+            z-index: 35;
+            display: none;
+            width: min(320px, calc(100vw - 24px));
+            background: rgba(9, 9, 17, 0.98);
+            border: 1px solid #7928ca;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 18px rgba(255, 0, 127, 0.25);
+            padding: 10px;
+        }
+        .app-menu.show { display: block; }
+        .menu-action {
+            width: 100%;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #7928ca, #0070f3);
+            color: #fff;
+        }
+        .sound-settings {
+            border-top: 1px solid rgba(121, 40, 202, 0.45);
+            margin-top: 8px;
+            padding-top: 8px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        .sound-settings select {
+            color: #ff007f;
+        }
+        .sound-settings select:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            border-color: rgba(121, 40, 202, 0.35);
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .mode-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100%;
+            max-height: 920px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+        .mode-header-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mode-header-row h1 { flex: 1; font-size: 1.35rem; text-align: center; }
+        .back-mode-button {
+            flex: 0 0 auto;
+            padding: 8px 10px;
+            background: #090911;
+            color: #00d2ff;
+            border: 1px solid #7928ca;
+            font-size: 0.68rem;
+        }
+
+        .metronome-stage {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+        }
+        .pulse-wrap {
+            width: min(350px, 86vw);
+            aspect-ratio: 1 / 1;
+            position: relative;
+            display: grid;
+            place-items: center;
+        }
+        .pulse-wave {
+            position: absolute;
+            width: 58%;
+            height: 58%;
+            border: 2px solid rgba(0, 210, 255, 0.6);
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0.7);
+            pointer-events: none;
+        }
+        .pulse-wrap.pulse .pulse-wave.one { animation: pulseWave 0.7s ease-out; }
+        .pulse-wrap.pulse .pulse-wave.two { animation: pulseWave 0.7s ease-out 0.08s; }
+        .pulse-circle {
+            width: 68%;
+            height: 68%;
+            border-radius: 50%;
+            border: 3px solid #00d2ff;
+            background: radial-gradient(circle, rgba(255, 0, 127, 0.32), rgba(0, 112, 243, 0.18) 58%, rgba(5, 5, 8, 0.95));
+            box-shadow: 0 0 24px rgba(0, 210, 255, 0.55), inset 0 0 24px rgba(255, 0, 127, 0.4);
+            display: grid;
+            place-items: center;
+            transition: transform 0.08s ease, border-color 0.08s ease;
+        }
+        .pulse-wrap.pulse .pulse-circle {
+            transform: scale(1.08);
+            border-color: #ff007f;
+        }
+        .metronome-bpm-readout {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: #fff;
+            text-shadow: 0 0 14px rgba(255, 0, 127, 0.75);
+        }
+        .metronome-controls {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 44px 1fr 44px;
+            gap: 8px;
+            align-items: center;
+        }
+        .metronome-controls button {
+            min-width: 44px;
+            height: 44px;
+            padding: 0;
+            background: #090911;
+            color: #00d2ff;
+            border: 1px solid #7928ca;
+            font-size: 1.25rem;
+        }
+        #metronomeBpmRange {
+            accent-color: #ff007f;
+        }
+        #btnMetronomePlay {
+            flex: 0 0 auto;
+            width: 58px;
+            height: 58px;
+            padding: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0070f3, #00d2ff);
+            color: white;
+            font-size: 0;
+            position: relative;
+        }
+        #btnMetronomePlay::before {
+            content: "";
+            display: block;
+            width: 0;
+            height: 0;
+            margin: auto;
+            border-top: 11px solid transparent;
+            border-bottom: 11px solid transparent;
+            border-left: 17px solid #fff;
+            transform: translateX(2px);
+        }
+        #btnMetronomePlay.playing {
+            background: #ff3333;
+            box-shadow: 0 0 10px rgba(255, 51, 51, 0.5);
+        }
+        #btnMetronomePlay.playing::before {
+            width: 18px;
+            height: 18px;
+            border: none;
+            background: #fff;
+            transform: none;
+        }
+
+        @keyframes pulseWave {
+            0% { opacity: 0.9; transform: scale(0.72); }
+            100% { opacity: 0; transform: scale(1.75); }
         }
 
         .control-panel {
@@ -394,8 +592,18 @@
 
     <div id="mainContainer" class="app-container">
         <header>
-            <h1>RHYTHMIC GYM</h1>
-            <div class="credits">By Jordu</div>
+            <div class="top-header">
+                <div></div>
+                <div>
+                    <h1>RHYTHMIC GYM</h1>
+                    <div class="credits">By Jordu</div>
+                </div>
+                <button id="btnAppMenu" class="icon-menu-button" type="button" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
         </header>
 
         <div class="control-panel">
@@ -442,6 +650,43 @@
             <div id="countdownText" class="countdown-text">1</div>
         </div>
     </div>
+
+    <div id="appMenu" class="app-menu">
+        <button id="btnOpenMetronome" class="menu-action" type="button">Metronomo</button>
+        <div class="sound-settings">
+            <div>
+                <label for="readingSoundSelect">Suono</label>
+                <select id="readingSoundSelect">
+                    <option value="kick">Cassa</option>
+                    <option value="snare" selected>Rullante</option>
+                    <option value="hihat">Hi-hat</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="metronomeContainer" class="mode-container hidden">
+        <div class="mode-header-row">
+            <button id="btnBackMetronome" class="back-mode-button" type="button">Indietro</button>
+            <h1>METRONOMO</h1>
+        </div>
+        <div class="metronome-stage">
+            <div id="metronomePulse" class="pulse-wrap">
+                <div class="pulse-wave one"></div>
+                <div class="pulse-wave two"></div>
+                <div class="pulse-circle">
+                    <div><span id="metronomeBpmReadout" class="metronome-bpm-readout">100</span></div>
+                </div>
+            </div>
+            <div class="metronome-controls">
+                <button id="btnMetroMinus" type="button">-</button>
+                <input id="metronomeBpmRange" type="range" min="20" max="350" value="100">
+                <button id="btnMetroPlus" type="button">+</button>
+            </div>
+            <button id="btnMetronomePlay" type="button">Play</button>
+        </div>
+    </div>
+
     <div id="slotMenu" class="slot-menu">
         <button id="btnOpenTutorial" type="button">Tutorial</button>
     </div>
@@ -478,9 +723,12 @@
 
     <script>
         const metronomeSound = new Audio('click.mp3'); 
-        const rhythmSound = new Audio('rull.mp3');
+        const rhythmSound = new Audio('snare.mp3');
+        const kickSound = new Audio('kick.mp3');
+        const hihatSound = new Audio('hihat.mp3');
         const clapSound = new Audio ('clap.mp3');
         const stompSound = new Audio ('stomp.mp3');
+        let readingSoundTarget = 'snare';
         
         function playClickSound() {
             metronomeSound.currentTime = 0;
@@ -488,7 +736,8 @@
         }
 
         function playRhythmSound() {
-            const clone = rhythmSound.cloneNode();
+            const source = readingSoundTarget === 'kick' ? kickSound : readingSoundTarget === 'hihat' ? hihatSound : rhythmSound;
+            const clone = source.cloneNode();
             clone.play().catch(() => {});
         }
 
@@ -636,6 +885,7 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
             U: `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="20" ry="13" stroke-width="5.5" transform="rotate(-20 50 50)" class="draw-stroke"/></svg>`,
             V: `<svg viewBox="0 0 100 100"><line x1="20" y1="45" x2="80" y2="45" stroke-width="3" class="draw-stroke"/><rect x="35" y="45" width="30" height="12" class="draw-fill"/></svg>`,
             W: `<svg viewBox="0 0 100 100"><ellipse cx="45" cy="75" rx="10" ry="7" stroke-width="4.5" transform="rotate(-20 45 75)" class="draw-stroke"/><line x1="54" y1="74" x2="54" y2="25" stroke-width="4" class="draw-stroke"/></svg>`,
+            AA: `<svg viewBox="0 0 100 100"><ellipse cx="38" cy="75" rx="10" ry="7" stroke-width="4.5" transform="rotate(-20 38 75)" class="draw-stroke"/><line x1="47" y1="74" x2="47" y2="25" stroke-width="4" class="draw-stroke"/><circle cx="65" cy="75" r="3.5" class="draw-fill"/></svg>`,
             X: `<svg viewBox="0 0 100 100"><line x1="20" y1="55" x2="80" y2="55" stroke-width="3" class="draw-stroke"/><rect x="35" y="43" width="30" height="12" class="draw-fill"/></svg>`,
             Y: `<svg viewBox="0 0 100 100"><circle cx="19" cy="48" r="3" class="draw-fill"/><path d="M19,48 C27,52 23,38 15,60" stroke-width="2.5" class="draw-stroke"/><circle cx="23" cy="38" r="3" class="draw-fill"/><path d="M23,38 C31,42 27,28 19,50" stroke-width="2.5" class="draw-stroke"/><ellipse cx="41" cy="75" rx="6" ry="4.5" transform="rotate(-20 41 75)" class="draw-fill"/><line x1="46" y1="75" x2="46" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="59" cy="75" rx="6" ry="4.5" transform="rotate(-20 59 75)" class="draw-fill"/><line x1="64" y1="75" x2="64" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="77" cy="75" rx="6" ry="4.5" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3" class="draw-stroke"/><rect x="46" y="22" width="36" height="6" class="draw-fill"/><rect x="46" y="32" width="36" height="4" class="draw-fill"/></svg>`,
             Z: `<svg viewBox="0 0 100 100"><text x="50" y="16" font-family='Orbitron' font-size="12" font-weight="900" text-anchor="middle" fill="#ff007f">3</text><circle cx="24" cy="40" r="4" class="draw-fill"/><path d="M24,40 C34,45 29,30 19,58" stroke-width="3" class="draw-stroke"/><circle cx="50" cy="40" r="4" class="draw-fill"/><path d="M50,40 C60,45 55,30 45,58" stroke-width="3" class="draw-stroke"/><ellipse cx="70" cy="75" rx="7" ry="5" transform="rotate(-20 76 75)" class="draw-fill"/><line x1="76" y1="75" x2="76" y2="25" stroke-width="3.5" class="draw-stroke"/><path d="M76,25 C86,35 86,48 76,55" stroke-width="4.5" fill="none" class="draw-stroke"/></svg>`,
@@ -647,7 +897,7 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
             I: [0.5, 0.75], J: [0, 0.75], K: [0, 0.25], L: [0.25, 0.75],
             M: [0.25, 0.5], N: [0.75], O: [0.25], P: [0, 0.333, 0.666],
             Q: [0.333, 0.666], R: [0, 0.666], S: [0, 0.333], T: [0.333],
-            U: [0], V: [], W: [0], X: [], Y: [0.25, 0.5, 0.75], Z: [0.666],
+            U: [0], V: [], W: [0], AA: [0], X: [], Y: [0.25, 0.5, 0.75], Z: [0.666],
             CLAP: [0], STOMP: [0], EMPTY: []
         };
 
@@ -834,6 +1084,13 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
                     <p>Nota dalla durata di 2/4.</p>
                 `
             },
+            AA: {
+                name: "Minima puntata",
+                text: `
+                    <!-- SCRIVI QUI IL TESTO DEL TUTORIAL PER: Minima puntata -->
+                    <p>Dato che il punto di valore aggiunge meta' del valore di una nota alla nota stessa, minima (2/4) + punto (1/4) = minima puntata (3/4).</p>
+                `
+            },
             X: {
                 name: "Pausa di minima",
                 text: `
@@ -866,7 +1123,7 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
             5: { name: "Livello 5 - Semicroma/croma/semicroma", current: ['H'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G'] },
             6: { name: "Livello 6 - Pause e semicrome", current: ['I'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] },
             7: { name: "Livello 7 - Pause di semicrome", current: ['Y', 'L', 'M'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'] },
-            8: { name: "Livello 8 - Figurazioni puntate", current: ['J', 'K', 'N', 'O'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M'] },
+            8: { name: "Livello 8 - Figurazioni puntate", current: ['J', 'K', 'N', 'O', 'AA'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M'] },
             9: { name: "Livello 9 - Terzina", current: ['P'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O'] },
             10: { name: "Livello 10 - Terzina con 1 pausa", current: ['Q', 'R', 'S'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'P'] },
             11: { name: "Livello 11 - Terzina con 2 pause", current: ['T', 'Z'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'P', 'Q', 'R', 'S'] },
@@ -897,10 +1154,25 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
         const btnTutorialPlay = document.getElementById('btnTutorialPlay');
         const tutorialCountdownOverlay = document.getElementById('tutorialCountdownOverlay');
         const tutorialCountdownText = document.getElementById('tutorialCountdownText');
+        const btnAppMenu = document.getElementById('btnAppMenu');
+        const appMenu = document.getElementById('appMenu');
+        const btnOpenMetronome = document.getElementById('btnOpenMetronome');
+        const metronomeContainer = document.getElementById('metronomeContainer');
+        const btnBackMetronome = document.getElementById('btnBackMetronome');
+        const btnMetronomePlay = document.getElementById('btnMetronomePlay');
+        const metronomePulse = document.getElementById('metronomePulse');
+        const metronomeBpmReadout = document.getElementById('metronomeBpmReadout');
+        const metronomeBpmRange = document.getElementById('metronomeBpmRange');
+        const btnMetroMinus = document.getElementById('btnMetroMinus');
+        const btnMetroPlus = document.getElementById('btnMetroPlus');
+        const readingSoundSelect = document.getElementById('readingSoundSelect');
 
         let selectedTutorialKey = null;
         let tutorialPlaybackInterval = null;
         let isTutorialPlaying = false;
+        let metronomeInterval = null;
+        let isMetronomePlaying = false;
+        let metronomeBpm = 100;
 
         // MODALITA DIAGNOSTICA:
         // cambia false in true per mostrare le lettere delle figurazioni negli slot.
@@ -915,6 +1187,80 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
         });
 
         bpmInput.addEventListener('input', () => { bpmValue.textContent = bpmInput.value; });
+
+        function hideAllModes() {
+            mainContainer.classList.add('hidden');
+            tutorialContainer.classList.add('hidden');
+            metronomeContainer.classList.add('hidden');
+        }
+
+        function showMainMode() {
+            stopMetronomeMode();
+            hideAllModes();
+            mainContainer.classList.remove('hidden');
+        }
+
+        function openMetronomeMode() {
+            if (isPlaying) stopPlayback();
+            if (isTutorialPlaying) stopTutorialPlayback();
+            hideAppMenu();
+            hideAllModes();
+            metronomeContainer.classList.remove('hidden');
+        }
+
+        function hideAppMenu() {
+            appMenu.classList.remove('show');
+        }
+
+        function clampBpm(value, min, max) {
+            const number = parseInt(value, 10);
+            if (Number.isNaN(number)) return min;
+            return Math.max(min, Math.min(max, number));
+        }
+
+        function setMainBpm(value) {
+            const bpm = clampBpm(value, 40, 220);
+            bpmInput.value = bpm;
+            bpmValue.textContent = bpm;
+        }
+
+        function setMetronomeBpm(value) {
+            const bpm = clampBpm(value, 20, 350);
+            metronomeBpm = bpm;
+            metronomeBpmRange.value = bpm;
+            metronomeBpmReadout.textContent = bpm;
+
+            if (isMetronomePlaying) {
+                stopMetronomeMode();
+                startMetronomeMode();
+            }
+        }
+
+        function pulseMetronome() {
+            playClickSound();
+            metronomePulse.classList.remove('pulse');
+            void metronomePulse.offsetWidth;
+            metronomePulse.classList.add('pulse');
+        }
+
+        function startMetronomeMode() {
+            warmUpAudio();
+            isMetronomePlaying = true;
+            btnMetronomePlay.textContent = 'Stop';
+            btnMetronomePlay.classList.add('playing');
+            pulseMetronome();
+            const msPerBeat = (60 / metronomeBpm) * 1000;
+            metronomeInterval = setInterval(pulseMetronome, msPerBeat);
+        }
+
+        function stopMetronomeMode() {
+            isMetronomePlaying = false;
+            clearInterval(metronomeInterval);
+            metronomeInterval = null;
+            btnMetronomePlay.textContent = 'Play';
+            btnMetronomePlay.classList.remove('playing');
+            metronomePulse.classList.remove('pulse');
+        }
 
         function applyFigurationKey(slot, key) {
             slot.setAttribute('data-type', key);
@@ -965,6 +1311,32 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
             }
         }
 
+        function getFigurationSlots(key) {
+            if (key === 'U' || key === 'V') return 4;
+            if (key === 'AA') return 3;
+            if (key === 'W' || key === 'X') return 2;
+            return 1;
+        }
+
+        function canPlaceInMeasure(key, index) {
+            const position = index % 4;
+            return position + getFigurationSlots(key) <= 4;
+        }
+
+        function canPlaceInRange(key, index, end) {
+            return canPlaceInMeasure(key, index) && index + getFigurationSlots(key) <= end;
+        }
+
+        function addExtendedSlots(index, key, end) {
+            const slots = getFigurationSlots(key);
+            for (let next = 1; next < slots; next++) {
+                if (index + next < end) {
+                    document.getElementById(`slot-${index + next}`).classList.add('extended');
+                }
+            }
+            return slots;
+        }
+
 function randomizeGrid() {
     const currentLevel = difficultySelect.value;
     const levelData = levels[currentLevel];
@@ -988,28 +1360,14 @@ function randomizeGrid() {
             key = getRandomKey(levelData);
             attempt++;
             if (attempt > 50) { key = 'A'; break; }
-        } while (
-            ((key === 'W' || key === 'X') && (i % 4 === 3)) ||
-            ((key === 'U' || key === 'V') && (i % 4 !== 0))
-        );
+        } while (!canPlaceInRange(key, i, 16));
 
         slot.insertAdjacentHTML('beforeend', figurations[key]);
         applyFigurationKey(slot, key);
         
         slot.classList.add('animate-pop');
 
-        // Logica extended
-        if (key === 'U' || key === 'V') { 
-            for (let next = 1; next <= 3; next++) {
-                if (i + next < 16) document.getElementById(`slot-${i + next}`).classList.add('extended');
-            }
-            i += 4;
-        } else if (key === 'W' || key === 'X') { 
-            if (i + 1 < 16) document.getElementById(`slot-${i + 1}`).classList.add('extended');
-            i += 2;
-        } else {
-            i++; 
-        }
+        i += addExtendedSlots(i, key, 16);
     }
 }
 function randomizeRange(start, end) {
@@ -1037,26 +1395,12 @@ function randomizeRange(start, end) {
             key = getRandomKey(levelData);
             attempt++;
             if (attempt > 50) { key = 'A'; break; }
-        } while (
-            ((key === 'W' || key === 'X') && (i % 4 === 3)) ||
-            ((key === 'U' || key === 'V') && (i % 4 !== 0))
-        );
+        } while (!canPlaceInRange(key, i, end));
 
         slot.insertAdjacentHTML('beforeend', figurations[key]);
         applyFigurationKey(slot, key);
         
-        // Gestione estensioni (per non "tagliare" una nota che occupa piu slot)
-        if (key === 'U' || key === 'V') {
-            for (let next = 1; next <= 3; next++) {
-                if (i + next < 16) document.getElementById(`slot-${i + next}`).classList.add('extended');
-            }
-            i += 4;
-        } else if (key === 'W' || key === 'X') {
-            if (i + 1 < 16) document.getElementById(`slot-${i + 1}`).classList.add('extended');
-            i += 2;
-        } else {
-            i++;
-        }
+        i += addExtendedSlots(i, key, end);
     }
 }
         function getTutorialKeyFromSlot(index) {
@@ -1070,8 +1414,7 @@ function randomizeRange(start, end) {
                 if (!previousKey) continue;
 
                 const distance = index - previous;
-                if ((previousKey === 'U' || previousKey === 'V') && distance <= 3) return previousKey;
-                if ((previousKey === 'W' || previousKey === 'X') && distance <= 1) return previousKey;
+                if (distance < getFigurationSlots(previousKey)) return previousKey;
             }
 
             return null;
@@ -1134,24 +1477,84 @@ function randomizeRange(start, end) {
             slot.className = 'slot empty';
             slot.innerHTML = '';
             slot.removeAttribute('data-type');
+            slot.removeAttribute('data-extended-from');
+        }
+
+        function getTutorialMainIndex(index) {
+            const slot = document.getElementById(`tutorial-slot-${index}`);
+            if (slot.getAttribute('data-type')) return index;
+
+            const extendedFrom = slot.getAttribute('data-extended-from');
+            if (extendedFrom !== null) return parseInt(extendedFrom, 10);
+
+            return null;
+        }
+
+        function canPlaceTutorialKey(index, key) {
+            const slots = getFigurationSlots(key);
+            const rowPosition = index % 4;
+
+            if (rowPosition + slots > 4 || index + slots > 8) return false;
+
+            for (let offset = 0; offset < slots; offset++) {
+                const slot = document.getElementById(`tutorial-slot-${index + offset}`);
+                if (slot.getAttribute('data-type') || slot.getAttribute('data-extended-from')) return false;
+            }
+
+            return true;
+        }
+
+        function clearTutorialGroup(index) {
+            const mainIndex = getTutorialMainIndex(index);
+            if (mainIndex === null) return;
+
+            const mainSlot = document.getElementById(`tutorial-slot-${mainIndex}`);
+            const key = mainSlot.getAttribute('data-type');
+            const slots = getFigurationSlots(key);
+
+            for (let offset = 0; offset < slots && mainIndex + offset < 8; offset++) {
+                clearTutorialSlot(mainIndex + offset);
+            }
         }
 
         function fillTutorialSlot(index) {
+            if (!canPlaceTutorialKey(index, selectedTutorialKey)) return;
+
             const slot = document.getElementById(`tutorial-slot-${index}`);
             slot.className = 'slot animate-pop';
             slot.innerHTML = figurations[selectedTutorialKey];
             applyFigurationKey(slot, selectedTutorialKey);
+
+            const slots = getFigurationSlots(selectedTutorialKey);
+            for (let offset = 1; offset < slots; offset++) {
+                const extendedSlot = document.getElementById(`tutorial-slot-${index + offset}`);
+                extendedSlot.className = 'slot extended';
+                extendedSlot.innerHTML = '';
+                extendedSlot.removeAttribute('data-type');
+                extendedSlot.setAttribute('data-extended-from', index);
+            }
         }
 
         function toggleTutorialSlot(index) {
             if (!selectedTutorialKey || isTutorialPlaying) return;
 
-            const slot = document.getElementById(`tutorial-slot-${index}`);
-            const currentKey = slot.getAttribute('data-type');
-            if (currentKey === selectedTutorialKey) {
-                clearTutorialSlot(index);
-            } else {
+            const mainIndex = getTutorialMainIndex(index);
+            if (mainIndex !== null) {
+                const currentKey = document.getElementById(`tutorial-slot-${mainIndex}`).getAttribute('data-type');
+                if (currentKey === selectedTutorialKey || index !== mainIndex) {
+                    clearTutorialGroup(index);
+                    return;
+                }
+
+                clearTutorialGroup(index);
+            }
+
+            if (canPlaceTutorialKey(index, selectedTutorialKey)) {
                 fillTutorialSlot(index);
+            } else {
+                if (mainIndex !== null && canPlaceTutorialKey(mainIndex, selectedTutorialKey)) {
+                    fillTutorialSlot(mainIndex);
+                }
             }
         }
 
@@ -1233,6 +1636,23 @@ function randomizeRange(start, end) {
         }
 
         document.addEventListener('click', hideSlotMenu);
+        document.addEventListener('click', hideAppMenu);
+        btnAppMenu.addEventListener('click', (event) => {
+            appMenu.classList.toggle('show');
+            event.stopPropagation();
+        });
+        appMenu.addEventListener('click', (event) => event.stopPropagation());
+        btnOpenMetronome.addEventListener('click', openMetronomeMode);
+        btnBackMetronome.addEventListener('click', showMainMode);
+        btnMetronomePlay.addEventListener('click', () => {
+            if (isMetronomePlaying) { stopMetronomeMode(); } else { startMetronomeMode(); }
+        });
+        metronomeBpmRange.addEventListener('input', () => setMetronomeBpm(metronomeBpmRange.value));
+        btnMetroMinus.addEventListener('click', () => setMetronomeBpm(metronomeBpm - 1));
+        btnMetroPlus.addEventListener('click', () => setMetronomeBpm(metronomeBpm + 1));
+        readingSoundSelect.addEventListener('change', () => {
+            readingSoundTarget = readingSoundSelect.value;
+        });
         slotMenu.addEventListener('click', (event) => event.stopPropagation());
         btnOpenTutorial.addEventListener('click', () => openTutorial(selectedTutorialKey));
         btnBackTutorial.addEventListener('click', closeTutorial);
@@ -1281,7 +1701,6 @@ function randomizeRange(start, end) {
     
     // Suono metronomo standard
     playClickSound();
-    
     if (playbackToggle.checked) {
         const type = slot.getAttribute('data-type');
         playFigurationSound(type, () => isPlaying, msPerBeat);
