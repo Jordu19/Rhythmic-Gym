@@ -488,6 +488,86 @@
             font-size: 0.72rem;
             border-radius: 6px;
         }
+        .create-slot-menu {
+            position: fixed;
+            z-index: 30;
+            display: none;
+            width: min(280px, calc(100vw - 24px));
+            background: #050508;
+            border: 1px solid rgba(255,0,127,0.75);
+            border-radius: 8px;
+            box-shadow: 0 0 18px rgba(255,0,127,0.45);
+            padding: 8px;
+        }
+        .create-slot-menu.show { display: block; }
+        .create-figuration-list {
+            width: 100%;
+            max-height: min(420px, calc(100vh - 120px));
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+        .create-figuration-option {
+            min-height: 72px;
+            background: #090911;
+            color: #fff;
+            border: 1px solid rgba(0,210,255,0.7);
+            border-radius: 6px;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 10px rgba(0,112,243,0.18);
+        }
+        .create-figuration-option:hover {
+            border-color: #ff007f;
+            box-shadow: 0 0 12px rgba(255,0,127,0.35), inset 0 0 10px rgba(255,0,127,0.16);
+        }
+        .create-figuration-option svg {
+            width: 100%;
+            height: 58px;
+        }
+        .create-figuration-option svg .draw-fill { fill: #ffffff; }
+        .create-figuration-option svg .draw-stroke { stroke: #ffffff; fill: none; }
+        .create-figuration-clear {
+            grid-column: 1 / -1;
+            min-height: 42px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #7928ca, #ff007f);
+        }
+        .slot.create-empty {
+            cursor: pointer;
+        }
+        .slot.create-empty::after {
+            content: "+";
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 8vw, 4rem);
+            color: rgba(255, 255, 255, 0.18);
+            text-shadow: 0 0 10px rgba(0,210,255,0.25);
+        }
+        .create-title {
+            display: none;
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            color: #ff007f;
+            border: 1px solid rgba(255,0,127,0.6);
+            border-radius: 8px;
+            background: rgba(255,0,127,0.08);
+            text-shadow: 0 0 10px rgba(255,0,127,0.7);
+        }
+        body.create-mode #levelControl,
+        body.create-mode #autoRandomControl,
+        body.create-mode #btnRandomize {
+            display: none;
+        }
+        body.create-mode #createTitle {
+            display: block;
+        }
 
         .tutorial-container {
             width: 100%;
@@ -608,11 +688,12 @@
 
         <div class="control-panel">
             <div class="row">
-                <div class="flex-1">
+                <div id="levelControl" class="flex-1">
                     <label for="difficulty">Difficolta' / Argomento</label>
                     <select id="difficulty"></select>
                 </div>
-    <div style="display:flex; flex-direction:column; align-items:center;">
+                <div id="createTitle" class="create-title">Crea la tua ritmica!</div>
+    <div id="autoRandomControl" style="display:flex; flex-direction:column; align-items:center;">
     <label for="autoRandomToggle" style="margin-bottom:6px">AutoRandom</label>
     <label class="switch">
         <input type="checkbox" id="autoRandomToggle">
@@ -653,6 +734,7 @@
 
     <div id="appMenu" class="app-menu">
         <button id="btnOpenMetronome" class="menu-action" type="button">Metronomo</button>
+        <button id="btnToggleCreate" class="menu-action" type="button">Crea</button>
         <div class="sound-settings">
             <div>
                 <label for="readingSoundSelect">Suono</label>
@@ -689,6 +771,10 @@
 
     <div id="slotMenu" class="slot-menu">
         <button id="btnOpenTutorial" type="button">Tutorial</button>
+    </div>
+
+    <div id="createSlotMenu" class="create-slot-menu">
+        <div id="createFigurationList" class="create-figuration-list"></div>
     </div>
 
     <div id="tutorialContainer" class="tutorial-container hidden">
@@ -887,6 +973,7 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
             W: `<svg viewBox="0 0 100 100"><ellipse cx="45" cy="75" rx="10" ry="7" stroke-width="4.5" transform="rotate(-20 45 75)" class="draw-stroke"/><line x1="54" y1="74" x2="54" y2="25" stroke-width="4" class="draw-stroke"/></svg>`,
             AA: `<svg viewBox="0 0 100 100"><ellipse cx="38" cy="75" rx="10" ry="7" stroke-width="4.5" transform="rotate(-20 38 75)" class="draw-stroke"/><line x1="47" y1="74" x2="47" y2="25" stroke-width="4" class="draw-stroke"/><circle cx="65" cy="75" r="3.5" class="draw-fill"/></svg>`,
             X: `<svg viewBox="0 0 100 100"><line x1="20" y1="55" x2="80" y2="55" stroke-width="3" class="draw-stroke"/><rect x="35" y="43" width="30" height="12" class="draw-fill"/></svg>`,
+            BB: `<svg viewBox="0 0 100 100"><line x1="18" y1="55" x2="72" y2="55" stroke-width="3" class="draw-stroke"/><rect x="34" y="43" width="28" height="12" class="draw-fill"/><circle cx="78" cy="55" r="3.5" class="draw-fill"/></svg>`,
             Y: `<svg viewBox="0 0 100 100"><circle cx="19" cy="48" r="3" class="draw-fill"/><path d="M19,48 C27,52 23,38 15,60" stroke-width="2.5" class="draw-stroke"/><circle cx="23" cy="38" r="3" class="draw-fill"/><path d="M23,38 C31,42 27,28 19,50" stroke-width="2.5" class="draw-stroke"/><ellipse cx="41" cy="75" rx="6" ry="4.5" transform="rotate(-20 41 75)" class="draw-fill"/><line x1="46" y1="75" x2="46" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="59" cy="75" rx="6" ry="4.5" transform="rotate(-20 59 75)" class="draw-fill"/><line x1="64" y1="75" x2="64" y2="25" stroke-width="3" class="draw-stroke"/><ellipse cx="77" cy="75" rx="6" ry="4.5" transform="rotate(-20 77 75)" class="draw-fill"/><line x1="82" y1="75" x2="82" y2="25" stroke-width="3" class="draw-stroke"/><rect x="46" y="22" width="36" height="6" class="draw-fill"/><rect x="46" y="32" width="36" height="4" class="draw-fill"/></svg>`,
             Z: `<svg viewBox="0 0 100 100"><text x="50" y="16" font-family='Orbitron' font-size="12" font-weight="900" text-anchor="middle" fill="#ff007f">3</text><circle cx="24" cy="40" r="4" class="draw-fill"/><path d="M24,40 C34,45 29,30 19,58" stroke-width="3" class="draw-stroke"/><circle cx="50" cy="40" r="4" class="draw-fill"/><path d="M50,40 C60,45 55,30 45,58" stroke-width="3" class="draw-stroke"/><ellipse cx="70" cy="75" rx="7" ry="5" transform="rotate(-20 76 75)" class="draw-fill"/><line x1="76" y1="75" x2="76" y2="25" stroke-width="3.5" class="draw-stroke"/><path d="M76,25 C86,35 86,48 76,55" stroke-width="4.5" fill="none" class="draw-stroke"/></svg>`,
         };
@@ -897,7 +984,7 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
             I: [0.5, 0.75], J: [0, 0.75], K: [0, 0.25], L: [0.25, 0.75],
             M: [0.25, 0.5], N: [0.75], O: [0.25], P: [0, 0.333, 0.666],
             Q: [0.333, 0.666], R: [0, 0.666], S: [0, 0.333], T: [0.333],
-            U: [0], V: [], W: [0], AA: [0], X: [], Y: [0.25, 0.5, 0.75], Z: [0.666],
+            U: [0], V: [], W: [0], AA: [0], X: [], BB: [], Y: [0.25, 0.5, 0.75], Z: [0.666],
             CLAP: [0], STOMP: [0], EMPTY: []
         };
 
@@ -1098,6 +1185,13 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
                     <p>Pausa dalla durata di 2/4.</p>
                 `
             },
+            BB: {
+                name: "Pausa di minima puntata",
+                text: `
+                    <!-- SCRIVI QUI IL TESTO DEL TUTORIAL PER: Pausa di minima puntata -->
+                    <p>Dato che il punto di valore aggiunge meta' del valore di una nota alla nota stessa, pausa di minima (2/4) + punto (1/4) = pausa di minima puntata (3/4).</p>
+                `
+            },
             Y: {
                 name: "Pausa di semicroma-tre semicrome",
                 text: `
@@ -1123,11 +1217,11 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
             5: { name: "Livello 5 - Semicroma/croma/semicroma", current: ['H'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G'] },
             6: { name: "Livello 6 - Pause e semicrome", current: ['I'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] },
             7: { name: "Livello 7 - Pause di semicrome", current: ['Y', 'L', 'M'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'] },
-            8: { name: "Livello 8 - Figurazioni puntate", current: ['J', 'K', 'N', 'O', 'AA'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M'] },
-            9: { name: "Livello 9 - Terzina", current: ['P'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O'] },
-            10: { name: "Livello 10 - Terzina con 1 pausa", current: ['Q', 'R', 'S'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'P'] },
-            11: { name: "Livello 11 - Terzina con 2 pause", current: ['T', 'Z'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'P', 'Q', 'R', 'S'] },
-            12: { name: "Livello 12 - Ricapitolazione", current: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'Z'], past: [] },
+            8: { name: "Livello 8 - Figurazioni puntate", current: ['J', 'K', 'N', 'O', 'AA', 'BB'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M'] },
+            9: { name: "Livello 9 - Terzina", current: ['P'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'AA', 'BB'] },
+            10: { name: "Livello 10 - Terzina con 1 pausa", current: ['Q', 'R', 'S'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'AA', 'BB', 'P'] },
+            11: { name: "Livello 11 - Terzina con 2 pause", current: ['T', 'Z'], past: ['W', 'X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'AA', 'BB', 'P', 'Q', 'R', 'S'] },
+            12: { name: "Livello 12 - Ricapitolazione", current: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Y', 'L', 'M', 'J', 'K', 'N', 'O', 'AA', 'BB', 'P', 'Q', 'R', 'S', 'T', 'Z'], past: [] },
         };
 
         let playbackInterval = null;
@@ -1157,6 +1251,7 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
         const btnAppMenu = document.getElementById('btnAppMenu');
         const appMenu = document.getElementById('appMenu');
         const btnOpenMetronome = document.getElementById('btnOpenMetronome');
+        const btnToggleCreate = document.getElementById('btnToggleCreate');
         const metronomeContainer = document.getElementById('metronomeContainer');
         const btnBackMetronome = document.getElementById('btnBackMetronome');
         const btnMetronomePlay = document.getElementById('btnMetronomePlay');
@@ -1166,8 +1261,13 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
         const btnMetroMinus = document.getElementById('btnMetroMinus');
         const btnMetroPlus = document.getElementById('btnMetroPlus');
         const readingSoundSelect = document.getElementById('readingSoundSelect');
+        const autoRandomToggle = document.getElementById('autoRandomToggle');
+        const createSlotMenu = document.getElementById('createSlotMenu');
+        const createFigurationList = document.getElementById('createFigurationList');
 
         let selectedTutorialKey = null;
+        let selectedCreateIndex = null;
+        let isCreateMode = false;
         let tutorialPlaybackInterval = null;
         let isTutorialPlaying = false;
         let metronomeInterval = null;
@@ -1186,6 +1286,41 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
             difficultySelect.appendChild(opt);
         });
 
+        function getAllFigurationKeys() {
+            const ordered = [];
+            Object.values(levels).forEach(level => {
+                [...level.current, ...level.past].forEach(key => {
+                    if (!ordered.includes(key)) ordered.push(key);
+                });
+            });
+            Object.keys(figurations).forEach(key => {
+                if (!ordered.includes(key)) ordered.push(key);
+            });
+            return ordered;
+        }
+
+        function initCreateFigurationSelect() {
+            createFigurationList.innerHTML = '';
+
+            const clearButton = document.createElement('button');
+            clearButton.type = 'button';
+            clearButton.className = 'create-figuration-option create-figuration-clear';
+            clearButton.textContent = 'Cancella slot';
+            clearButton.addEventListener('click', () => placeSelectedCreateFiguration('__clear'));
+            createFigurationList.appendChild(clearButton);
+
+            getAllFigurationKeys().forEach(key => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'create-figuration-option';
+                button.title = tutorialContents[key]?.name || key;
+                button.setAttribute('aria-label', tutorialContents[key]?.name || key);
+                button.innerHTML = figurations[key];
+                button.addEventListener('click', () => placeSelectedCreateFiguration(key));
+                createFigurationList.appendChild(button);
+            });
+        }
+
         bpmInput.addEventListener('input', () => { bpmValue.textContent = bpmInput.value; });
 
         function hideAllModes() {
@@ -1200,10 +1335,44 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
             mainContainer.classList.remove('hidden');
         }
 
+        function enterCreateMode() {
+            if (isPlaying) stopPlayback();
+            if (isTutorialPlaying) stopTutorialPlayback();
+            stopMetronomeMode();
+            hideAppMenu();
+            hideSlotMenu();
+            hideCreateSlotMenu();
+            isCreateMode = true;
+            autoRandomToggle.checked = false;
+            document.body.classList.add('create-mode');
+            btnToggleCreate.textContent = 'Menu principale';
+            showMainMode();
+            clearCreateGrid();
+        }
+
+        function exitCreateMode() {
+            if (isPlaying) stopPlayback();
+            hideCreateSlotMenu();
+            isCreateMode = false;
+            document.body.classList.remove('create-mode');
+            btnToggleCreate.textContent = 'Crea';
+            showMainMode();
+            randomizeGrid();
+        }
+
+        function toggleCreateMode() {
+            if (isCreateMode) {
+                exitCreateMode();
+            } else {
+                enterCreateMode();
+            }
+        }
+
         function openMetronomeMode() {
             if (isPlaying) stopPlayback();
             if (isTutorialPlaying) stopTutorialPlayback();
             hideAppMenu();
+            hideCreateSlotMenu();
             hideAllModes();
             metronomeContainer.classList.remove('hidden');
         }
@@ -1281,7 +1450,13 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
                 const slot = document.createElement('div');
                 slot.classList.add('slot');
                 slot.id = `slot-${i}`;
-                slot.addEventListener('click', (event) => showSlotMenu(event, i));
+                slot.addEventListener('click', (event) => {
+                    if (isCreateMode) {
+                        showCreateSlotMenu(event, i);
+                    } else {
+                        showSlotMenu(event, i);
+                    }
+                });
                 gridContainer.appendChild(slot);
             }
         }
@@ -1313,7 +1488,7 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
 
         function getFigurationSlots(key) {
             if (key === 'U' || key === 'V') return 4;
-            if (key === 'AA') return 3;
+            if (key === 'AA' || key === 'BB') return 3;
             if (key === 'W' || key === 'X') return 2;
             return 1;
         }
@@ -1337,16 +1512,140 @@ EMPTY: `<svg viewBox="0 0 100 100"></svg>`, // Riquadro vuoto
             return slots;
         }
 
+        function clearMainSlot(index) {
+            const slot = document.getElementById(`slot-${index}`);
+            slot.className = 'slot';
+            slot.innerHTML = '';
+            slot.removeAttribute('data-type');
+            slot.removeAttribute('data-extended-from');
+        }
+
+        function clearCreateGrid() {
+            for (let i = 0; i < 16; i++) {
+                clearMainSlot(i);
+                document.getElementById(`slot-${i}`).classList.add('create-empty');
+            }
+        }
+
+        function getMainSlotOwner(index) {
+            const slot = document.getElementById(`slot-${index}`);
+            if (slot.getAttribute('data-type')) return index;
+
+            const extendedFrom = slot.getAttribute('data-extended-from');
+            if (extendedFrom !== null) return parseInt(extendedFrom, 10);
+
+            return null;
+        }
+
+        function clearCreateGroup(index) {
+            const owner = getMainSlotOwner(index);
+            if (owner === null) return;
+
+            const ownerSlot = document.getElementById(`slot-${owner}`);
+            const key = ownerSlot.getAttribute('data-type');
+            const slots = getFigurationSlots(key);
+
+            for (let offset = 0; offset < slots && owner + offset < 16; offset++) {
+                clearMainSlot(owner + offset);
+                document.getElementById(`slot-${owner + offset}`).classList.add('create-empty');
+            }
+        }
+
+        function canPlaceCreateKey(index, key) {
+            if (!canPlaceInRange(key, index, 16)) return false;
+
+            for (let offset = 0; offset < getFigurationSlots(key); offset++) {
+                const slot = document.getElementById(`slot-${index + offset}`);
+                if (slot.getAttribute('data-type') || slot.getAttribute('data-extended-from')) return false;
+            }
+
+            return true;
+        }
+
+        function canPlaceCreateKeyForSelection(index, key) {
+            if (!canPlaceInRange(key, index, 16)) return false;
+
+            const owner = getMainSlotOwner(index);
+            const ownerKey = owner !== null ? document.getElementById(`slot-${owner}`).getAttribute('data-type') : null;
+            const ownerEnd = owner !== null ? owner + getFigurationSlots(ownerKey) : owner;
+
+            for (let offset = 0; offset < getFigurationSlots(key); offset++) {
+                const slotIndex = index + offset;
+                const slot = document.getElementById(`slot-${slotIndex}`);
+                const occupied = slot.getAttribute('data-type') || slot.getAttribute('data-extended-from');
+                const belongsToCurrentGroup = owner !== null && slotIndex >= owner && slotIndex < ownerEnd;
+
+                if (occupied && !belongsToCurrentGroup) return false;
+            }
+
+            return true;
+        }
+
+        function fillCreateSlot(index, key) {
+            if (!canPlaceCreateKey(index, key)) return false;
+
+            const slot = document.getElementById(`slot-${index}`);
+            slot.className = 'slot animate-pop';
+            slot.innerHTML = figurations[key];
+            applyFigurationKey(slot, key);
+
+            const slots = getFigurationSlots(key);
+            for (let offset = 1; offset < slots; offset++) {
+                const extendedSlot = document.getElementById(`slot-${index + offset}`);
+                extendedSlot.className = 'slot extended';
+                extendedSlot.innerHTML = '';
+                extendedSlot.removeAttribute('data-type');
+                extendedSlot.setAttribute('data-extended-from', index);
+            }
+
+            return true;
+        }
+
+        function showCreateSlotMenu(event, index) {
+            if (isPlaying || isTutorialPlaying) return;
+
+            selectedCreateIndex = index;
+            createSlotMenu.style.left = `${Math.min(event.clientX, window.innerWidth - 292)}px`;
+            createSlotMenu.style.top = `${Math.min(event.clientY, window.innerHeight - 58)}px`;
+            createSlotMenu.classList.add('show');
+            event.stopPropagation();
+        }
+
+        function hideCreateSlotMenu() {
+            createSlotMenu.classList.remove('show');
+        }
+
+        function placeSelectedCreateFiguration(key) {
+            if (selectedCreateIndex === null) return;
+
+            if (key === '__clear') {
+                clearCreateGroup(selectedCreateIndex);
+                hideCreateSlotMenu();
+                return;
+            }
+
+            if (!canPlaceCreateKeyForSelection(selectedCreateIndex, key)) {
+                return;
+            }
+
+            const owner = getMainSlotOwner(selectedCreateIndex);
+            if (owner !== null) clearCreateGroup(selectedCreateIndex);
+
+            if (canPlaceCreateKey(selectedCreateIndex, key)) {
+                fillCreateSlot(selectedCreateIndex, key);
+            }
+
+            hideCreateSlotMenu();
+        }
+
 function randomizeGrid() {
+    if (isCreateMode) return;
     const currentLevel = difficultySelect.value;
     const levelData = levels[currentLevel];
     
     // Pulizia griglia
    for (let i = 0; i < 16; i++) {
-        const slot = document.getElementById(`slot-${i}`);
-        slot.className = 'slot'; 
-        slot.innerHTML = '';
-        slot.removeAttribute('data-type');
+        clearMainSlot(i);
     }
 
     let i = 0;
@@ -1376,10 +1675,7 @@ function randomizeRange(start, end) {
     
     // Pulisce e resetta solo gli slot richiesti
     for (let i = start; i < end; i++) {
-        const slot = document.getElementById(`slot-${i}`);
-        slot.className = 'slot'; // Reset classi (rimuove active, extended, ecc)
-        slot.innerHTML = '<div class="slot-label"></div>'; 
-        slot.removeAttribute('data-type');
+        clearMainSlot(i);
     }
 
     // Riempie il range
@@ -1636,6 +1932,7 @@ function randomizeRange(start, end) {
         }
 
         document.addEventListener('click', hideSlotMenu);
+        document.addEventListener('click', hideCreateSlotMenu);
         document.addEventListener('click', hideAppMenu);
         btnAppMenu.addEventListener('click', (event) => {
             appMenu.classList.toggle('show');
@@ -1643,6 +1940,7 @@ function randomizeRange(start, end) {
         });
         appMenu.addEventListener('click', (event) => event.stopPropagation());
         btnOpenMetronome.addEventListener('click', openMetronomeMode);
+        btnToggleCreate.addEventListener('click', toggleCreateMode);
         btnBackMetronome.addEventListener('click', showMainMode);
         btnMetronomePlay.addEventListener('click', () => {
             if (isMetronomePlaying) { stopMetronomeMode(); } else { startMetronomeMode(); }
@@ -1654,6 +1952,7 @@ function randomizeRange(start, end) {
             readingSoundTarget = readingSoundSelect.value;
         });
         slotMenu.addEventListener('click', (event) => event.stopPropagation());
+        createSlotMenu.addEventListener('click', (event) => event.stopPropagation());
         btnOpenTutorial.addEventListener('click', () => openTutorial(selectedTutorialKey));
         btnBackTutorial.addEventListener('click', closeTutorial);
         btnTutorialPlay.addEventListener('click', () => {
@@ -1713,7 +2012,7 @@ function randomizeRange(start, end) {
 
             playbackInterval = setInterval(() => {const autoRandomToggle = document.getElementById('autoRandomToggle');
 
-if (autoRandomToggle && autoRandomToggle.checked) {
+if (!isCreateMode && autoRandomToggle && autoRandomToggle.checked) {
     // 1. Quando la lettura arriva allo slot 12 (che corrisponde al tuo "13")
     // Randomizziamo gli slot da 0 a 11 (che corrispondono ai tuoi "1 a 12")
     if (currentSlot === 12) {
@@ -1766,6 +2065,7 @@ if (autoRandomToggle && autoRandomToggle.checked) {
 
         initGrid();
         initTutorialGrid();
+        initCreateFigurationSelect();
         randomizeGrid();
     </script>
 </body>
